@@ -1,11 +1,16 @@
 import os
 import json
+import datetime
 from flask import Flask, request
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials  # 修正這行
 from googleapiclient.discovery import build
 
 app = Flask(__name__)
+
+# 設定時區為 UTC
+os.environ['TZ'] = 'UTC'
+datetime.datetime.utcnow()  # 使用 UTC 時間
 
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE_NAME = 'Sheet1!A2:F2'
