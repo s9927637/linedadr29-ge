@@ -30,13 +30,18 @@
         // 初始化LIFF應用，獲取userID並填入隱藏欄位
         liff.init({ liffId: "2003645883-Rn6V0a3n" }).then(() => {
             liff.getProfile().then(profile => {
+                // 將userID填入表單的隱藏欄位
                 document.getElementById('userID').value = profile.userId;
+            }).catch((error) => {
+                console.error('取得用戶資料錯誤:', error);
             });
+        }).catch((error) => {
+            console.error('LIFF初始化錯誤:', error);
         });
 
         // 提交表單並將資料傳送至後端
         document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // 防止表單重新整理頁面
 
             const userName = document.getElementById('name').value;
             const userPhone = document.getElementById('phone').value;
@@ -46,15 +51,26 @@
 
             const formTime = new Date().toISOString(); // 記錄填表時間
 
+            // 發送資料至後端
             fetch('https://linedadr29.hkg1.zeabur.app/saveData', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-            }).then(response => response.json())
-              .then(data => alert('預約成功！'))
-              .catch(error => console.error('Error:', error));
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('預約成功！');
+                    // 可以選擇重定向或清除表單
+                    // window.location.href = "some_url";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('預約失敗，請稍後再試');
+            });
         });
     </script>
 </body>
