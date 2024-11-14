@@ -19,17 +19,21 @@ service = build('sheets', 'v4', credentials=creds)
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
-    data = request.json
-    values = [
-        [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
-    ]
-    body = {
-        'values': values
-    }
-    service.spreadsheets().values().append(
-        spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
-        valueInputOption='RAW', body=body).execute()
-    return json.dumps({'status': 'success'}), 200
+    try:
+        data = request.json
+        values = [
+            [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
+        ]
+        body = {
+            'values': values
+        }
+        service.spreadsheets().values().append(
+            spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
+            valueInputOption='RAW', body=body).execute()
+        return json.dumps({'status': 'success'}), 200
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return json.dumps({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
