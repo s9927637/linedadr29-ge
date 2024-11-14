@@ -13,7 +13,7 @@ RANGE_NAME = 'Sheet1!A1:F1'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # 使用服務帳戶檔案來取得憑證
-creds = Credentials.from_service_account_file('google_sheet_api.json', scopes=SCOPES)
+creds = Credentials.from_service_account_file('googlesheetapi_key.json', scopes=SCOPES)
 
 service = build('sheets', 'v4', credentials=creds)
 
