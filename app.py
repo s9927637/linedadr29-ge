@@ -16,7 +16,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # 使用上傳的憑證JSON文件來進行身份驗證
 creds = None
 # 檢查憑證文件是否存在
-if os.path.exists('google sheet api.json'):
+if os.path.exists('googlesheetapi_key.json'):
     # 從google sheet api.json載入憑證
     creds = Credentials.from_service_account_file('google sheet api.json', scopes=SCOPES)
 
