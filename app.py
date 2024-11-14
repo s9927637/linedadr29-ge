@@ -20,7 +20,7 @@ service = build('sheets', 'v4', credentials=creds)
 @app.route('/saveData', methods=['POST'])
 def save_data():
     data = request.json
-    values = 2
+    values = [
         [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
     ]
     body = {
