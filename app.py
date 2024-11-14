@@ -8,15 +8,19 @@ from googleapiclient.discovery import build
 
 app = Flask(__name__)
 
-SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'  # 替換為您的試算表ID
-RANGE_NAME = 'Sheet1!A1:F1'  # 根據您的試算表範圍修改
-
+# 從環境變數中獲取配置
+SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')  # 從環境變數獲取試算表ID
+RANGE_NAME = os.getenv('RANGE_NAME', 'Sheet1!A1:F1')  # 從環境變數獲取範圍，默認為 'Sheet1!A1:F1'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# 檢查並處理Google API認證
+# 使用上傳的憑證JSON文件來進行身份驗證
 creds = None
-if os.path.exists('token.json'):
-    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+# 檢查憑證文件是否存在
+if os.path.exists('google sheet api.json'):
+    # 從google sheet api.json載入憑證
+    creds = Credentials.from_service_account_file('google sheet api.json', scopes=SCOPES)
+
+# 如果沒有有效的憑證，則進行身份驗證
 if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
