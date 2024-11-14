@@ -25,16 +25,19 @@ service = build('sheets', 'v4', credentials=creds)
 def save_data():
     # 檢查請求是否為 JSON 格式
     if not request.is_json:
+        print("Error: Request is not JSON")
         return jsonify({'status': 'error', 'message': 'Request must be JSON'}), 400
 
     try:
         # 解析 JSON 資料
         data = request.json
+        print(f"Received data: {data}")
 
         # 檢查資料欄位是否完整
         required_fields = ['userName', 'userPhone', 'vaccineName', 'appointmentDate', 'userID', 'formTime']
         for field in required_fields:
             if field not in data:
+                print(f"Missing field: {field}")
                 return jsonify({'status': 'error', 'message': f'Missing field: {field}'}), 400
 
         # 構建要寫入 Google Sheets 的資料
@@ -44,14 +47,17 @@ def save_data():
         body = {'values': values}
 
         # 寫入 Google Sheets
+        print(f"Appending data to Google Sheets: {values}")
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
 
+        print("Data saved successfully to Google Sheets")
         return jsonify({'status': 'success', 'message': 'Data saved successfully'}), 200
 
     except Exception as e:
         # 錯誤處理
+        print(f"Error occurred: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
