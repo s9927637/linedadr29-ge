@@ -37,7 +37,7 @@ service = build('sheets', 'v4', credentials=creds)
 def save_data():
     data = request.json
     values = [
-        [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
+        [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID']]
     ]
     body = {
         'values': values
