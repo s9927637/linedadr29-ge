@@ -8,39 +8,36 @@ from googleapiclient.discovery import build
 
 app = Flask(__name__)
 
-# Google Sheets API 設定
-SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'
-RANGE_NAME = 'Sheet1!A1:D1'  # 根據需要修改範圍
+SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'  # 替換為您的試算表ID
+RANGE_NAME = 'Sheet1!A1:F1'  # 根據您的試算表範圍修改
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
+# 檢查並處理Google API認證
 creds = None
-# 若之前有存儲的憑證，載入它們
 if os.path.exists('token.json'):
     creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'credentials.json', SCOPES)
+        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
         creds = flow.run_local_server(port=0)
-    # 保存憑證供下次使用
     with open('token.json', 'w') as token:
         token.write(creds.to_json())
 
 service = build('sheets', 'v4', credentials=creds)
 
+# 接收LIFF表單資料並將資料寫入Google試算表
 @app.route('/saveData', methods=['POST'])
 def save_data():
     data = request.json
     values = [
-        [data['userID'], data['userName'], data['vaccineName'], data['appointmentDate']]
+        [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
     ]
     body = {
         'values': values
     }
-    # 將資料寫入 Google 試算表
     service.spreadsheets().values().append(
         spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
         valueInputOption='RAW', body=body).execute()
