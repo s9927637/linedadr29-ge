@@ -1,50 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>疫苗預約</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疫苗預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-    <h2>填寫疫苗預約資訊</h2>
+    <h2>疫苗預約</h2>
     <form id="vaccine-form">
         <label for="name">姓名:</label>
         <input type="text" id="name" name="name" required><br>
-        
+
+        <label for="phone">電話:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
         <label for="vaccine">疫苗名稱:</label>
         <input type="text" id="vaccine" name="vaccine" required><br>
-        
+
         <label for="date">接種日期:</label>
         <input type="date" id="date" name="date" required><br>
-        
-        <button type="submit">提交</button>
+
+        <input type="hidden" id="userID" name="userID">
+
+        <button type="submit">提交預約</button>
     </form>
 
     <script>
-        // 初始化LIFF
-        liff.init({ liffId: "YOUR_LIFF_ID" }).then(() => {
-            // 取得用戶ID
+        // 初始化LIFF應用，獲取userID並填入隱藏欄位
+        liff.init({ liffId: "2003645883-Rn6V0a3n" }).then(() => {
             liff.getProfile().then(profile => {
                 document.getElementById('userID').value = profile.userId;
             });
         });
 
+        // 提交表單並將資料傳送至後端
         document.getElementById('vaccine-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const userName = document.getElementById('name').value;
+            const userPhone = document.getElementById('phone').value;
             const vaccineName = document.getElementById('vaccine').value;
             const appointmentDate = document.getElementById('date').value;
-            const userID = liff.getProfile().userId;
+            const userID = document.getElementById('userID').value;
 
-            // 傳送資料到伺服器（後端）
-            fetch('/saveData', {
+            const formTime = new Date().toISOString(); // 記錄填表時間
+
+            fetch('https://linedadr29.hkg1.zeabur.app/saveData', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userID, userName, vaccineName, appointmentDate }),
+                body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
             }).then(response => response.json())
-              .then(data => alert('預約已成功提交！'))
+              .then(data => alert('預約成功！'))
               .catch(error => console.error('Error:', error));
         });
     </script>
