@@ -3,7 +3,7 @@ import json
 import datetime
 from flask import Flask, request, jsonify
 from google.auth.transport.requests import Request
-from google.oauth2.service_account import Credentials
+from google.auth import default  # 使用 Google Cloud Run 預設認證
 from googleapiclient.discovery import build
 
 app = Flask(__name__)
@@ -17,8 +17,8 @@ SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE_NAME = 'Sheet1!A2:F2'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# 使用服務帳戶檔案來取得憑證
-creds = Credentials.from_service_account_file('googlesheetapi_key.json', scopes=SCOPES)
+# 使用 Google Cloud Run 預設的服務帳戶來取得憑證
+creds, project = default(scopes=SCOPES)
 service = build('sheets', 'v4', credentials=creds)
 
 @app.route('/saveData', methods=['POST'])
