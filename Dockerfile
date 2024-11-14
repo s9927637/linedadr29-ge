@@ -10,6 +10,7 @@ COPY . /app
 # 安裝所需的依賴
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 暴露容器的5000端口（Flask的預設端口）
 EXPOSE 5000
@@ -17,6 +18,8 @@ EXPOSE 5000
 # 設置環境變數
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
+# Set the time zone to UTC
+ENV TZ=UTC
 
 # 執行Flask應用
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
