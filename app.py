@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 app = Flask(__name__)
 
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
-RANGE_NAME = 'Sheet1!A1:F1'
+RANGE_NAME = 'Sheet1!A2:F2'
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -20,7 +20,7 @@ service = build('sheets', 'v4', credentials=creds)
 @app.route('/saveData', methods=['POST'])
 def save_data():
     data = request.json
-    values = [
+    values = 2
         [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
     ]
     body = {
