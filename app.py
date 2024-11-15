@@ -1,13 +1,17 @@
 import os
 import json
 import datetime
+import logging
 from flask import Flask, request, jsonify, send_from_directory
 from google.auth.transport.requests import Request
 from google.auth import default  # 使用 Google Cloud Run 預設認證
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
-
 from flask_cors import CORS
+
+# 設置日誌
+logging.basicConfig(level=logging.DEBUG)  # 設置為 DEBUG 等級以便顯示所有日誌
+
 app = Flask(__name__)
 CORS(app)
 
@@ -34,7 +38,12 @@ service = build('sheets', 'v4', credentials=creds)
 # 根路由處理 index.html
 @app.route('/')
 def index():
-    return send_from_directory('static', 'index.html')
+    try:
+        logging.debug("Serving index.html")
+        return send_from_directory('static', 'index.html')
+    except Exception as e:
+        logging.error(f"Error while serving index.html: {e}")
+        return jsonify({'status': 'error', 'message': 'Failed to serve index.html'}), 500
 
 # 處理 /saveData 路由的 POST 請求
 @app.route('/saveData', methods=['POST'])
@@ -43,8 +52,11 @@ def save_data():
         # 檢查 JSON 請求格式
         data = request.get_json()
         if data is None:
+            logging.error("Invalid JSON format in request")
             return jsonify({'status': 'error', 'message': 'Invalid JSON format'}), 400
         
+        logging.debug(f"Received data: {data}")
+
         # 構建要寫入 Google Sheets 的資料
         values = [
             [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
@@ -52,16 +64,19 @@ def save_data():
         body = {'values': values}
 
         # 寫入 Google Sheets
+        logging.debug(f"Writing data to Google Sheets: {values}")
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
 
+        logging.info("Data saved successfully to Google Sheets")
         return jsonify({'status': 'success', 'message': 'Data saved successfully'}), 200
 
     except Exception as e:
         # 錯誤處理
-        print(f"Error occurred: {e}")
+        logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
+    logging.info("Starting Flask application on port 8080")
     app.run(debug=False, host='0.0.0.0', port=8080)
