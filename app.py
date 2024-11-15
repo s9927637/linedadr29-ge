@@ -12,7 +12,7 @@ from flask_cors import CORS
 # 設置日誌
 logging.basicConfig(level=logging.DEBUG)  # 設置為 DEBUG 等級以便顯示所有日誌
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='/app/static')
 CORS(app)
 
 # 設定時區為 UTC
@@ -43,13 +43,7 @@ service = build('sheets', 'v4', credentials=creds)
 # 根路由處理 index.html
 @app.route('/')
 def index():
-    try:
-        # 這裡是提供靜態檔案
-        logging.debug("Serving index.html")
-        return send_from_directory(os.path.join(app.root_path, 'static'), 'index.html')
-    except Exception as e:
-        logging.error(f"Error while serving index.html: {e}")
-        return jsonify({'status': 'error', 'message': 'Failed to serve index.html'}), 500
+   return send_from_directory('static', 'index.html')
 
 # 處理 /saveData 路由的 POST 請求
 @app.route('/saveData', methods=['POST'])
