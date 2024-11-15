@@ -44,7 +44,7 @@ service = build('sheets', 'v4', credentials=creds)
 
 # 根路由處理 index.html
 @app.route('/')
-def serve_index():
+def index():
     return send_from_directory('static', 'index.html')
 
 # 處理 /saveData 路由的 POST 請求
