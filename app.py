@@ -22,15 +22,10 @@ google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 if not google_creds_json:
     raise ValueError("環境變數 'GOOGLE_APPLICATION_CREDENTIALS_JSON' 未設置或無內容")
 
-try:
-    google_creds_info = json.loads(google_creds_json)
-except json.JSONDecodeError as e:
-    print(f"JSONDecodeError: 無效的 JSON 格式 - {e}")
-    raise
+google_creds_info = json.loads(google_creds_json)
 
-# 使用 from_service_account_info 建立憑證物件
-creds = Credentials.from_service_account_info(google_creds_info)
-service = build('sheets', 'v4', credentials=creds)
+# 使用服務帳戶信息來建立憑證
+creds = credentials.Credentials.from_service_account_info(google_creds_info)
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
