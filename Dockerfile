@@ -13,8 +13,8 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 暴露容器的5000端口（Flask的預設端口）
-EXPOSE 5000
+# zeabur的8080端口（Flask的預設端口）
+EXPOSE 8080
 
 # 設置環境變數
 ENV FLASK_APP=app.py
