@@ -2,9 +2,10 @@ import os
 import json
 import datetime
 from flask import Flask, request, jsonify
+from google.auth.transport.requests import Request
 from google.auth import default  # 使用 Google Cloud Run 預設認證
-from google.oauth2.service_account import Credentials  # 引入正確的 Credentials 類別
 from googleapiclient.discovery import build
+from google.oauth2.service_account import Credentials
 
 app = Flask(__name__)
 
@@ -36,15 +37,6 @@ def save_data():
         if data is None:
             return jsonify({'status': 'error', 'message': 'Invalid JSON format'}), 400
         
-        # 處理資料
-        print(f"Received data: {data}")
-
-        # 檢查資料欄位是否完整
-        required_fields = ['userName', 'userPhone', 'vaccineName', 'appointmentDate', 'userID', 'formTime']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({'status': 'error', 'message': f'Missing field: {field}'}), 400
-
         # 構建要寫入 Google Sheets 的資料
         values = [
             [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
@@ -52,16 +44,11 @@ def save_data():
         body = {'values': values}
 
         # 寫入 Google Sheets
-        print(f"Appending data to Google Sheets: {values}")
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
 
-        print("Data saved successfully to Google Sheets")
         return jsonify({'status': 'success', 'message': 'Data saved successfully'}), 200
-
-    except json.JSONDecodeError as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
 
     except Exception as e:
         # 錯誤處理
