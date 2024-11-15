@@ -28,16 +28,22 @@
 
     <script>
         // 初始化LIFF應用，獲取userID並填入隱藏欄位
-        liff.init({ liffId: "2003645883-Rn6V0a3n" }).then(() => {
-            liff.getProfile().then(profile => {
-                // 將userID填入表單的隱藏欄位
-                document.getElementById('userID').value = profile.userId;
+        window.onload = function() {
+            liff.init({ liffId: "2003645883-Rn6V0a3n" }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        // 將userID填入表單的隱藏欄位
+                        document.getElementById('userID').value = profile.userId;
+                    }).catch((error) => {
+                        console.error('取得用戶資料錯誤:', error);
+                    });
+                } else {
+                    liff.login();  // 如果用戶尚未登入，則引導其登入
+                }
             }).catch((error) => {
-                console.error('取得用戶資料錯誤:', error);
+                console.error('LIFF初始化錯誤:', error);
             });
-        }).catch((error) => {
-            console.error('LIFF初始化錯誤:', error);
-        });
+        };
 
         // 提交表單並將資料傳送至後端
         document.getElementById('vaccine-form').addEventListener('submit', function(event) {
