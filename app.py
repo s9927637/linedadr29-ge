@@ -1,7 +1,7 @@
 import os
 import json
 import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from google.auth.transport.requests import Request
 from google.auth import default  # 使用 Google Cloud Run 預設認證
 from googleapiclient.discovery import build
@@ -31,6 +31,12 @@ google_creds_info = json.loads(google_creds_json)
 creds = Credentials.from_service_account_info(google_creds_info)
 service = build('sheets', 'v4', credentials=creds)
 
+# 根路由處理 index.html
+@app.route('/')
+def index():
+    return send_from_directory('static', 'index.html')
+
+# 處理 /saveData 路由的 POST 請求
 @app.route('/saveData', methods=['POST'])
 def save_data():
     try:
