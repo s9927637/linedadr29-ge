@@ -17,18 +17,16 @@ SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE_NAME = 'Sheet1!A2:F2'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# 取得 JSON 金鑰檔內容，並存為暫時檔案
-google_creds_content = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_CONTENT')
-with open('/tmp/creds.json', 'w') as f:
-    f.write(google_creds_content)
+# 讀取環境變數中的 JSON 金鑰內容，並解析為字典
+google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+if not google_creds_json:
+    raise ValueError("環境變數 'GOOGLE_APPLICATION_CREDENTIALS_JSON' 未設置或無內容")
 
-# 設定 GOOGLE_APPLICATION_CREDENTIALS 環境變數指向此暫時檔案
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/tmp/creds.json'
+google_creds_info = json.loads(google_creds_json)
 
-# 使用預設的 GOOGLE_APPLICATION_CREDENTIALS
-creds = Credentials.from_service_account_file('/tmp/creds.json')
+# 使用 from_service_account_info 建立憑證物件
+creds = Credentials.from_service_account_info(google_creds_info)
 service = build('sheets', 'v4', credentials=creds)
-
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
