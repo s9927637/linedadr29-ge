@@ -7,7 +7,9 @@ from google.auth import default  # 使用 Google Cloud Run 預設認證
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 # 設定時區為 UTC
 os.environ['TZ'] = 'UTC'
