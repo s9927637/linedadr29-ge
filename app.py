@@ -3,7 +3,7 @@ import json
 import datetime
 from flask import Flask, request, jsonify
 from google.auth.transport.requests import Request
-from google.auth import default  # 使用 Google Cloud Run 預設認證
+from google.oauth2.service_account import Credentials  # 確保引用正確
 from googleapiclient.discovery import build
 
 app = Flask(__name__)
@@ -30,21 +30,18 @@ service = build('sheets', 'v4', credentials=creds)
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
-    # 檢查請求是否為 JSON 格式
-    if not request.is_json:
-        print("Error: Request is not JSON")
-        return jsonify({'status': 'error', 'message': 'Request must be JSON'}), 400
+    # 檢查 JSON 請求格式
+    data = request.get_json()
+    if data is None:
+        print("Error: Invalid JSON format")
+        return jsonify({'status': 'error', 'message': 'Invalid JSON format'}), 400
 
     try:
-        # 解析 JSON 資料
-        data = request.json
-        print(f"Received data: {data}")
-
-        # 檢查資料欄位是否完整
+        # 確認資料欄位完整性
         required_fields = ['userName', 'userPhone', 'vaccineName', 'appointmentDate', 'userID', 'formTime']
         for field in required_fields:
             if field not in data:
-                print(f"Missing field: {field}")
+                print(f"Error: Missing field - {field}")
                 return jsonify({'status': 'error', 'message': f'Missing field: {field}'}), 400
 
         # 構建要寫入 Google Sheets 的資料
