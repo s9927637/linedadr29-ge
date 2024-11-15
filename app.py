@@ -78,5 +78,5 @@ def save_data():
         logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-iif __name__ == '__main__':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
