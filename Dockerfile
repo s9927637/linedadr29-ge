@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # 安裝所需的依賴
+RUN pip install flask-cors
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
