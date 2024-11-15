@@ -12,7 +12,11 @@ from flask_cors import CORS
 # 設置日誌
 logging.basicConfig(level=logging.DEBUG)  # 設置為 DEBUG 等級以便顯示所有日誌
 
-app = Flask(__name__, static_folder='/app/static')
+app = Flask(__name__)
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('static', 'index.html')
 CORS(app)
 
 # 設定時區為 UTC
@@ -77,7 +81,5 @@ def save_data():
         logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-if __name__ == '__main__':
-    logging.info("Starting Flask application on port 8080")
-    # 設定為 debug=False 並監聽在 0.0.0.0 上
-    app.run(debug=False, host='0.0.0.0', port=8080)
+iif __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
