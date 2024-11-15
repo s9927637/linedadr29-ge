@@ -17,9 +17,18 @@ SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE_NAME = 'Sheet1!A2:F2'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# 使用 Google Cloud Run 預設的服務帳戶來取得憑證
-creds, project = default(scopes=SCOPES)
+# 取得 JSON 金鑰檔內容，並存為暫時檔案
+google_creds_content = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_CONTENT')
+with open('/tmp/creds.json', 'w') as f:
+    f.write(google_creds_content)
+
+# 設定 GOOGLE_APPLICATION_CREDENTIALS 環境變數指向此暫時檔案
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/tmp/creds.json'
+
+# 使用預設的 GOOGLE_APPLICATION_CREDENTIALS
+creds = Credentials.from_service_account_file('/tmp/creds.json')
 service = build('sheets', 'v4', credentials=creds)
+
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
