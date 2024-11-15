@@ -14,9 +14,7 @@ logging.basicConfig(level=logging.DEBUG)  # 設置為 DEBUG 等級以便顯示�
 
 app = Flask(__name__)
 
-@app.route('/')
-def serve_index():
-    return send_from_directory('static', 'index.html')
+
 CORS(app)
 
 # 設定時區為 UTC
@@ -46,8 +44,7 @@ service = build('sheets', 'v4', credentials=creds)
 
 # 根路由處理 index.html
 @app.route('/')
-def index():
-    logging.debug("Serving index.html")
+def serve_index():
     return send_from_directory('static', 'index.html')
 
 # 處理 /saveData 路由的 POST 請求
