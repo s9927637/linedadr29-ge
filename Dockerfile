@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 複製當前目錄中的所有檔案到容器的工作目錄
 COPY . /app
-COPY index.html /app/static/
+COPY static /app/static
 
 # 安裝所需的依賴
 RUN pip install flask-cors
