@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +6,7 @@
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body> 
-<div class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-md sm:max-w-lg md:max-w-xl">
         <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">疫苗預約</h2>
         <form id="vaccine-form" class="space-y-6">
@@ -18,8 +15,6 @@
                 <label for="name" class="block text-sm font-medium text-gray-700">姓名:</label>
                 <input type="text" id="name" name="name" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼。</p>
-            </div>
             </div>
 
             <!-- 電話 -->
@@ -27,7 +22,7 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700">電話:</label>
                 <input type="text" id="phone" name="phone" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼。</p>
+                <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼。</p>
             </div>
 
             <!-- 疫苗名稱 -->
@@ -59,11 +54,9 @@
                     提交預約
                 </button>
             </div>
-            </div>
         </form>
+    </div>
 
-
-    <!-- 電話驗證模組 -->
     <script>
         document.getElementById('vaccine-form').addEventListener('submit', function (e) {
             const phoneInput = document.getElementById('phone');
@@ -82,8 +75,7 @@
             }
         });
     </script>
-    
-    <script>
+        <script>
         // 初始化LIFF應用，獲取userID並填入隱藏欄位
         window.onload = function() {
             liff.init({ liffId: "2003645883-Rn6V0a3n" }).then(() => {
