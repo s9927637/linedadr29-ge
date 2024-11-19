@@ -18,6 +18,8 @@
                 <label for="name" class="block text-sm font-medium text-gray-700">姓名:</label>
                 <input type="text" id="name" name="name" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼。</p>
+            </div>
             </div>
 
             <!-- 電話 -->
@@ -25,6 +27,8 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700">電話:</label>
                 <input type="text" id="phone" name="phone" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼。</p>
+            </div>
             </div>
 
             <!-- 疫苗名稱 -->
@@ -59,6 +63,27 @@
             </div>
         </form>
 
+
+    <!-- 電話驗證模組 -->
+    <script>
+        document.getElementById('vaccine-form').addEventListener('submit', function (e) {
+            const phoneInput = document.getElementById('phone');
+            const phoneError = document.getElementById('phone-error');
+            const phoneValue = phoneInput.value.trim();
+
+            // 驗證電話是否為 10 位數字
+            if (!/^\d{10}$/.test(phoneValue)) {
+                e.preventDefault(); // 阻止表單提交
+                phoneError.classList.remove('hidden'); // 顯示錯誤訊息
+                phoneInput.classList.add('border-red-500'); // 顯示錯誤邊框
+                phoneInput.focus(); // 聚焦到電話欄位
+            } else {
+                phoneError.classList.add('hidden'); // 隱藏錯誤訊息
+                phoneInput.classList.remove('border-red-500'); // 移除錯誤邊框
+            }
+        });
+    </script>
+    
     <script>
         // 初始化LIFF應用，獲取userID並填入隱藏欄位
         window.onload = function() {
