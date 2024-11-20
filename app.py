@@ -125,15 +125,9 @@ def save_data():
                 [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
             ]
         else:  # 第二劑和第三劑接種時間
-            # 針對 "欣克疹疫苗" 和 "A肝疫苗"，確保第二劑時間放入第二劑接種時間欄位，第三劑接種時間為 None
-            if data['vaccineName'] in ['欣克疹疫苗', 'A肝疫苗']:
-                values = [
-                    [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
-                ]
-            else:  # 子宮頸疫苗有第二劑和第三劑
-                values = [
-                    [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
-                ]
+            values = [
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
+            ]
 
         body = {'values': values}
 
