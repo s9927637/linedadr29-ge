@@ -26,7 +26,7 @@ if not SPREADSHEET_ID:
     logging.error("環境變數 'SPREADSHEET_ID' 未設置")
     raise ValueError("環境變數 'SPREADSHEET_ID' 未設置")
 
-RANGE_NAME = 'Sheet1!A2:F2'
+RANGE_NAME = 'Sheet1!A2:F2'  # 更新範圍，第二劑和第三劑接種時間在疫苗名稱後面
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
@@ -116,9 +116,9 @@ def save_data():
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
-        # 構建要寫入 Google Sheets 的資料
+        # 構建要寫入 Google Sheets 的資料，將第二劑和第三劑接種時間放在疫苗名稱後
         values = [
-            [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], data['userID'], data['formTime']]
+            [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], data['formTime']]
         ]
         body = {'values': values}
 
