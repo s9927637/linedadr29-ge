@@ -113,22 +113,27 @@ def save_data():
         
         logging.debug(f"Received data: {data}")
 
-         # 格式化填表時間為 XXXX年XX月XX日XX時XX分 (24小時制)
+        # 格式化填表時間為 XXXX年XX月XX日XX時XX分 (24小時制)
         form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
-        
+
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
         # 構建要寫入 Google Sheets 的資料
         if third_dose_date is None:  # 只有第二劑接種時間
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], data['formTime']]
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
             ]
         else:  # 第二劑和第三劑接種時間
-            values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], data['formTime']]
-            ]
-
+            # 針對 "欣克疹疫苗" 和 "A肝疫苗"，確保第二劑時間放入第二劑接種時間欄位，第三劑接種時間為 None
+            if data['vaccineName'] in ['欣克疹疫苗', 'A肝疫苗']:
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
+                ]
+            else:  # 子宮頸疫苗有第二劑和第三劑
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
+                ]
 
         body = {'values': values}
 
