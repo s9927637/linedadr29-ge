@@ -116,10 +116,16 @@ def save_data():
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
-        # 構建要寫入 Google Sheets 的資料，將第二劑和第三劑接種時間放在疫苗名稱後
-        values = [
-            [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], data['formTime']]
-        ]
+        # 構建要寫入 Google Sheets 的資料
+        if third_dose_date is None:  # 只有第二劑接種時間
+            values = [
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], data['formTime']]
+            ]
+        else:  # 第二劑和第三劑接種時間
+            values = [
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], data['formTime']]
+            ]
+
         body = {'values': values}
 
         logging.debug(f"Writing data to Google Sheets: {values}")
