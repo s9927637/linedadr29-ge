@@ -103,7 +103,6 @@ def index():
     return send_from_directory('static', 'index.html')
 
 
-# 處理 /saveData 路由的 POST 請求
 @app.route('/saveData', methods=['POST'])
 def save_data():
     try:
@@ -122,11 +121,13 @@ def save_data():
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
         # 構建要寫入 Google Sheets 的資料
-        if third_dose_date is None:  # 只有第二劑接種時間
+        if vaccine_name == '欣克疹疫苗' or vaccine_name == 'A肝疫苗':
+            # 只填寫第二劑接種時間，第三劑欄位為 None
             values = [
                 [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
             ]
-        else:  # 第二劑和第三劑接種時間
+        else:
+            # 子宮頸疫苗填寫第二劑和第三劑接種時間
             values = [
                 [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
             ]
@@ -147,6 +148,7 @@ def save_data():
     except Exception as e:
         logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 
 if __name__ == '__main__':
