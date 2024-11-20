@@ -44,14 +44,16 @@ LINE_API_URL = "https://api.line.me/v2/bot/message/push"
 
 # 計算接種日期
 def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
-    first_dose_date_obj = datetime.datetime.strptime(first_dose_date, '%Y-%m-%d')
+    first_dose_date_obj = datetime.datetime.strptime(first_dose_date, '%Y-%m-%d')  # 解析為日期對象
 
     if vaccine_name == '子宮頸疫苗':
+        # 第二劑和第三劑接種時間
         second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
         third_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=180)
         return second_dose_date_obj.strftime('%Y-%m-%d'), third_dose_date_obj.strftime('%Y-%m-%d')
     
     elif vaccine_name == '欣克疹疫苗' or vaccine_name == 'A肝疫苗':
+        # 第二劑接種時間是接種日期後60天
         second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
         return second_dose_date_obj.strftime('%Y-%m-%d'), None
     
