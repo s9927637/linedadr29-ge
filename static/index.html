@@ -5,7 +5,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+       <style>
         select, input[type="date"] {
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -59,6 +59,7 @@
                         <option value="A肝疫苗">A肝疫苗</option>
                     </select>
                     <span id="vaccine-check" class="checkmark">&#10003;</span>
+                    <p id="vaccine-error" class="mt-1 text-red-500 text-sm hidden">請選擇疫苗名稱。</p>
                 </div>
 
                 <!-- 接種日期 -->
@@ -67,6 +68,7 @@
                     <input type="date" id="date" name="date" required
                         class="text-sm mt-2.5 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 bg-white">
                     <span id="date-check" class="checkmark">&#10003;</span>
+                    <p id="date-error" class="mt-1 text-red-500 text-sm hidden">請選擇接種日期。</p>
                 </div>
 
                 <!-- 隱藏字段 -->
@@ -126,28 +128,34 @@
 
             // 疫苗名稱驗證
             const vaccineInput = document.getElementById('vaccine');
+            const vaccineError = document.getElementById('vaccine-error');
             const vaccineCheck = document.getElementById('vaccine-check');
 
             if (!vaccineInput.value) {
                 formValid = false;
+                vaccineError.classList.remove('hidden');
                 vaccineInput.classList.add('border-red-500');
                 vaccineInput.focus();
                 vaccineCheck.classList.add('hidden');
             } else {
+                vaccineError.classList.add('hidden');
                 vaccineInput.classList.remove('border-red-500');
                 vaccineCheck.classList.remove('hidden'); // 顯示打勾
             }
 
             // 日期驗證
             const dateInput = document.getElementById('date');
+            const dateError = document.getElementById('date-error');
             const dateCheck = document.getElementById('date-check');
 
             if (!dateInput.value) {
                 formValid = false;
+                dateError.classList.remove('hidden');
                 dateInput.classList.add('border-red-500');
                 dateInput.focus();
                 dateCheck.classList.add('hidden');
             } else {
+                dateError.classList.add('hidden');
                 dateInput.classList.remove('border-red-500');
                 dateCheck.classList.remove('hidden'); // 顯示打勾
             }
