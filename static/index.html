@@ -175,7 +175,7 @@
             const userID = document.getElementById('userID').value;
             const formTime = new Date().toISOString(); // 記錄填表時間
 
-            // 發送資料至後端
+// 發送資料至後端
             fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -192,10 +192,12 @@
                 if (data.status === 'success') {
                     alert('填寫完成！'); // 顯示成功訊息
                     // 嘗試關閉 LIFF 視窗
-                    try {
-                        liff.close();
-                    } catch (err) {
-                        console.error('LIFF 關閉失敗：', err);
+                    if (liff.isInClient()) {
+                        try {
+                            liff.close();
+                        } catch (err) {
+                            console.error('LIFF 關閉失敗：', err);
+                        }
                     }
                 } else {
                     throw new Error('伺服器回傳失敗狀態');
@@ -219,13 +221,12 @@
                     console.log("用戶資料:", profile);
                     document.getElementById('userID').value = profile.userId;
                 })
-                .catch(err => {
-                    console.error('LIFF 初始化失敗:', err);
+                .catch((err) => {
+                    console.error("LIFF 初始化錯誤:", err);
                 });
         }
 
-        // 等待 LIFF 加載完成後初始化
-        window.onload = function() {
+        window.onload = () => {
             if (liff.isInClient()) {
                 initializeLIFF();
             } else {
