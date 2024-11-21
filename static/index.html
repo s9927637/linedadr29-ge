@@ -178,27 +178,32 @@ if (!dateInput.value) {
         const formTime = new Date().toISOString(); // 記錄填表時間
 
         // 發送資料至後端
-        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('填寫完成！');  // 顯示填寫成功訊息
-                liff.close();  // 關閉LIFF視窗
+       fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+})
+.then(response => response.json())
+.then(data => {
+    if (data.status === 'success') {
+        alert('填寫完成！');  // 顯示填寫成功訊息
+        
+        // 清空表單內容
+        document.getElementById('vaccine-form').reset();  // 假設您的表單ID為 'vaccine-form'
 
-                // 在LINE BOT中回覆訊息
-                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('填寫失敗，請稍後再試');
-        });
+        // 只有在LINE客戶端內才會關閉LIFF視窗
+        if (liff.isInClient()) {
+            liff.close();  // 關閉LIFF視窗
+        }
+
+        // 在LINE BOT中回覆訊息
+        sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('填寫失敗，請稍後再試');
+});
     });
 </script>
 <script>
