@@ -168,50 +168,60 @@
             console.log("表單驗證通過，準備提交資料");
 
             // 當表單通過驗證後，發送資料到後端
-            const userName = nameValue;
-            const userPhone = phoneValue;
-            const vaccineName = vaccineInput.value;
-            const appointmentDate = dateInput.value;
-            const userID = document.getElementById('userID').value;
-            const formTime = new Date().toISOString(); // 記錄填表時間
+const formSubmitButton = document.getElementById('formSubmit'); // 假設有一個提交按鈕
 
+formSubmitButton.addEventListener('click', () => {
+    // 獲取表單資料
+    const userName = nameValue; // 用戶姓名
+    const userPhone = phoneValue; // 用戶電話
+    const vaccineName = vaccineInput.value; // 選擇的疫苗名稱
+    const appointmentDate = dateInput.value; // 選擇的接種日期
+    const userID = document.getElementById('userID').value; // 用戶ID，來自LIFF
+    const formTime = new Date().toISOString(); // 記錄填表時間
 
-            // 發送資料至後端
-            fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`伺服器錯誤，狀態碼：${response.status}`);
+    // 檢查是否有 userID
+    if (!userID) {
+        console.error('缺少 userID');
+        alert('請先登入 LINE');
+        return;
+    }
+
+    // 發送資料至後端
+    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`伺服器錯誤，狀態碼：${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('伺服器回應:', data);
+        if (data.status === 'success') {
+            alert('填寫完成！'); // 顯示成功訊息
+            // 嘗試關閉 LIFF 視窗
+            if (liff.isInClient()) {
+                console.log("LIFF 內部環境，關閉視窗...");
+                try {
+                    liff.close(); // 關閉 LIFF 視窗
+                } catch (err) {
+                    console.error('LIFF 關閉失敗：', err);
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('伺服器回應:', data);
-                if (data.status === 'success') {
-                    alert('填寫完成！'); // 顯示成功訊息
-                    // 嘗試關閉 LIFF 視窗
-                    if (liff.isInClient()) {
-                        console.log("LIFF 內部環境，關閉視窗...");
-                        try {
-                            liff.close(); // 關閉 LIFF 視窗
-                        } catch (err) {
-                            console.error('LIFF 關閉失敗：', err);
-                        }
-                    } else {
-                        console.log("不在 LINE 客戶端中，無法關閉 LIFF 視窗");
-                    }
-                } else {
-                    throw new Error('伺服器回傳失敗狀態');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('填寫失敗，請稍後再試');
-            });
-        });
+            } else {
+                console.log("不在 LINE 客戶端中，無法關閉 LIFF 視窗");
+            }
+        } else {
+            throw new Error('伺服器回傳失敗狀態');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('填寫失敗，請稍後再試');
+    });
+});
 
 // 初始化 LIFF
 function initializeLIFF() {
@@ -221,15 +231,15 @@ function initializeLIFF() {
             console.log("LIFF 初始化成功");
             if (!liff.isLoggedIn()) {
                 console.log("用戶尚未登入 LINE，請先登入");
-                liff.login();  // If the user is not logged in, force login
+                liff.login();  // 如果用戶尚未登入，強制登入
             } else {
-                return liff.getProfile();
+                return liff.getProfile(); // 獲取用戶資料
             }
         })
         .then(profile => {
             console.log("用戶資料:", profile);
-            console.log("用戶ID:", profile.userId);  // Display user ID
-            document.getElementById('userID').value = profile.userId; // Set user ID in hidden input field
+            console.log("用戶ID:", profile.userId);  // 顯示用戶 ID
+            document.getElementById('userID').value = profile.userId; // 設定 userID 到隱藏的輸入欄位
         })
         .catch((err) => {
             console.error("LIFF 初始化錯誤:", err);
@@ -241,6 +251,7 @@ function initializeLIFF() {
         });
 }
 
+// 頁面加載時初始化 LIFF
 window.onload = () => {
     if (liff.isInClient()) {
         initializeLIFF();
