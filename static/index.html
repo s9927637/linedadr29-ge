@@ -214,21 +214,22 @@
         });
 
         // 初始化 LIFF
-        function initializeLIFF() {
-            console.log("初始化 LIFF...");
-            liff.init({ liffId: "2003645883-Rn6V0a3n" })
-                .then(() => {
-                    console.log("LIFF 初始化成功");
-                    return liff.getProfile();
-                })
-                .then(profile => {
-                    console.log("用戶資料:", profile);
-                    document.getElementById('userID').value = profile.userId; // 設置用戶ID
-                })
-                .catch((err) => {
-                    console.error("LIFF 初始化錯誤:", err);
-                });
-        }
+function initializeLIFF() {
+    console.log("初始化 LIFF...");
+    liff.init({ liffId: "2003645883-Rn6V0a3n" })
+        .then(() => {
+            console.log("LIFF 初始化成功");
+            return liff.getProfile();
+        })
+        .then(profile => {
+            console.log("用戶資料:", profile);
+            console.log("用戶ID:", profile.userId);  // 顯示用戶ID以便驗證
+            document.getElementById('userID').value = profile.userId; // 設置用戶 ID 到隱藏輸入框
+        })
+        .catch((err) => {
+            console.error("LIFF 初始化錯誤:", err);
+        });
+}
 
         window.onload = () => {
             if (liff.isInClient()) {
