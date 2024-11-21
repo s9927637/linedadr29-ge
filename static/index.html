@@ -2,10 +2,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>疫苗接種提醒表單</title>
-    <script src="https://static.line-scdn.net/liff/2.2/sdk.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+       <style>
         select, input[type="date"] {
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -15,21 +15,21 @@
             padding-right: 2.5rem;
             -webkit-print-color-adjust: exact;
         }
-        .checkmark {
-            position: absolute;
-            right: 0.5rem;
-            top: 1.5rem;
-            color: green;
-            font-size: 1.5rem; /* 調整大小 */
-            display: none;
-        }
+.checkmark {
+    position: absolute;
+    right: 0.5rem;
+    top: 1.5rem;
+    color: green;
+    font-size: 1.5rem; /* 調整大小 */
+    display: none;
+}
     </style>
 </head>
 <body>
     <div class="bg-gray-100 flex items-center justify-center min-h-screen">
         <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md sm:max-w-lg md:max-w-xl">
             <h2 class="text-2xl font-bold text-center mb-10 text-gray-800 pt-2">疫苗接種提醒通知</h2>
-            <form id="vaccine-form" method="POST" class="space-y-6">
+            <form id="vaccine-form" class="space-y-6">
                 <!-- 姓名 -->
                 <div class="relative">
                     <label for="name" class="block text-sm font-medium text-gray-900">姓名</label>
@@ -85,143 +85,148 @@
         </div>
     </div>
     
-    <script>
-        // 表單提交事件
-        document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // 防止表單重新整理頁面
+   <script>
+    // 表單提交事件
+    document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // 防止表單重新整理頁面
 
-            let formValid = true;
+        let formValid = true;
 
-            // 姓名驗證
-            const nameInput = document.getElementById('name');
-            const nameError = document.getElementById('name-error');
-            const nameCheck = document.getElementById('name-check');
-            const nameValue = nameInput.value.trim();
+       // 姓名驗證
+const nameInput = document.getElementById('name');
+const nameError = document.getElementById('name-error');
+const nameCheck = document.getElementById('name-check');
+const nameValue = nameInput.value.trim();
 
-            if (!/^[\u4e00-\u9fa5a-zA-Z\s]+$/.test(nameValue)) {
-                formValid = false;
-                nameError.classList.remove('hidden');
-                nameInput.classList.add('border-red-500');
-                nameInput.focus();
-                nameCheck.classList.add('hidden');  // 隱藏打勾
-            } else {
-                nameError.classList.add('hidden');
-                nameInput.classList.remove('border-red-500');
-                nameCheck.classList.remove('hidden'); // 顯示打勾
-            }
+if (!/^[\u4e00-\u9fa5a-zA-Z\s]+$/.test(nameValue)) {
+    formValid = false;
+    nameError.classList.remove('hidden');
+    nameInput.classList.add('border-red-500');
+    nameInput.focus();
+    nameCheck.classList.add('hidden');  // 隱藏打勾
+} else {
+    nameError.classList.add('hidden');
+    nameInput.classList.remove('border-red-500');
+    nameCheck.classList.remove('hidden'); // 顯示打勾
+}
 
-            // 電話驗證
-            const phoneInput = document.getElementById('phone');
-            const phoneError = document.getElementById('phone-error');
-            const phoneCheck = document.getElementById('phone-check');
-            const phoneValue = phoneInput.value.trim();
+// 電話驗證
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phone-error');
+const phoneCheck = document.getElementById('phone-check');
+const phoneValue = phoneInput.value.trim();
 
-            if (!/^\d{10}$/.test(phoneValue)) {
-                formValid = false;
-                phoneError.classList.remove('hidden');
-                phoneInput.classList.add('border-red-500');
-                phoneInput.focus();
-                phoneCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                phoneError.classList.add('hidden');
-                phoneInput.classList.remove('border-red-500');
-                phoneCheck.classList.remove('hidden'); // 顯示打勾
-            }
+if (!/^\d{10}$/.test(phoneValue)) {
+    formValid = false;
+    phoneError.classList.remove('hidden');
+    phoneInput.classList.add('border-red-500');
+    phoneInput.focus();
+    phoneCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    phoneError.classList.add('hidden');
+    phoneInput.classList.remove('border-red-500');
+    phoneCheck.classList.remove('hidden'); // 顯示打勾
+}
 
-            // 疫苗名稱驗證
-            const vaccineInput = document.getElementById('vaccine');
-            const vaccineError = document.getElementById('vaccine-error');
-            const vaccineCheck = document.getElementById('vaccine-check');
+// 疫苗名稱驗證
+const vaccineInput = document.getElementById('vaccine');
+const vaccineError = document.getElementById('vaccine-error');
+const vaccineCheck = document.getElementById('vaccine-check');
 
-            if (!vaccineInput.value) {
-                formValid = false;
-                vaccineError.classList.remove('hidden');
-                vaccineInput.classList.add('border-red-500');
-                vaccineInput.focus();
-                vaccineCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                vaccineError.classList.add('hidden');
-                vaccineInput.classList.remove('border-red-500');
-                vaccineCheck.classList.remove('hidden'); // 顯示打勾
-            }
+if (!vaccineInput.value) {
+    formValid = false;
+    vaccineError.classList.remove('hidden');
+    vaccineInput.classList.add('border-red-500');
+    vaccineInput.focus();
+    vaccineCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    vaccineError.classList.add('hidden');
+    vaccineInput.classList.remove('border-red-500');
+    vaccineCheck.classList.remove('hidden'); // 顯示打勾
+}
 
-            // 日期驗證
-            const dateInput = document.getElementById('date');
-            const dateError = document.getElementById('date-error');
-            const dateCheck = document.getElementById('date-check');
+// 日期驗證
+const dateInput = document.getElementById('date');
+const dateError = document.getElementById('date-error');
+const dateCheck = document.getElementById('date-check');
 
-            if (!dateInput.value) {
-                formValid = false;
-                dateError.classList.remove('hidden');
-                dateInput.classList.add('border-red-500');
-                dateInput.focus();
-                dateCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                dateError.classList.add('hidden');
-                dateInput.classList.remove('border-red-500');
-                dateCheck.classList.remove('hidden'); // 顯示打勾
-            }
+if (!dateInput.value) {
+    formValid = false;
+    dateError.classList.remove('hidden');
+    dateInput.classList.add('border-red-500');
+    dateInput.focus();
+    dateCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    dateError.classList.add('hidden');
+    dateInput.classList.remove('border-red-500');
+    dateCheck.classList.remove('hidden'); // 顯示打勾
+}
 
-            // 如果表單未通過驗證，阻止提交
-            if (!formValid) {
-                return;
-            }
 
-            // 當表單驗證通過後，獲取用戶資料並提交表單
-            const userID = document.getElementById('userID').value;
-
-            if (!userID) {
-                alert("用戶ID尚未獲取，請稍等片刻再提交。");
-                return; // 若沒有 userID 則不提交表單
-            }
-
-            const formData = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                vaccine: document.getElementById('vaccine').value,
-                date: document.getElementById('date').value,
-                userID: userID
-            };
-
-            fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('預約成功！');
-                } else {
-                    alert('預約失敗，請重試！');
-                }
-            })
-            .catch(error => {
-                console.error('錯誤:', error);
-                alert('發生錯誤，請稍後再試！');
-            });
-        });
-
-        // 初始化LIFF並獲取用戶ID
-        function initializeLIFF() {
-            liff.init({ liffId: "2003645883-Rn6V0a3n" })
-                .then(() => {
-                    // 獲取用戶的userID
-                    return liff.getProfile();
-                })
-                .then(profile => {
-                    // 將用戶ID設置為隱藏欄位
-                    document.getElementById('userID').value = profile.userId;
-                })
-                .catch(err => {
-                    console.error('LIFF初始化錯誤:', err);
-                    alert('LIFF初始化失敗，請確保在LINE應用內運行此頁面');
-                });
+        // 如果表單未通過驗證，阻止提交
+        if (!formValid) {
+            return;
         }
 
-        // 初始化LIFF
-        initializeLIFF();
-    </script>
+        // 當表單通過驗證後，發送資料到後端
+        const userName = document.getElementById('name').value;
+        const userPhone = document.getElementById('phone').value;
+        const vaccineName = document.getElementById('vaccine').value;
+        const appointmentDate = document.getElementById('date').value;
+        const userID = document.getElementById('userID').value;
+
+        const formTime = new Date().toISOString(); // 記錄填表時間
+
+        // 發送資料至後端
+        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('填寫完成！');  // 顯示填寫成功訊息
+                liff.close();  // 關閉LIFF視窗
+
+                // 在LINE BOT中回覆訊息
+                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('填寫失敗，請稍後再試');
+        });
+    });
+</script>
+<script>
+    // 初始化LIFF
+    function initializeLIFF() {
+        liff.init({ liffId: "2003645883-Rn6V0a3n" })
+            .then(() => {
+                // 獲取用戶的userID
+                return liff.getProfile();
+            })
+            .then(profile => {
+                // 將用戶ID設置為隱藏欄位
+                document.getElementById('userID').value = profile.userId;
+            })
+            .catch(err => {
+                console.error('LIFF初始化錯誤:', err);
+            });
+    }
+
+    // 等待LIFF加載完成後初始化
+    window.onload = function() {
+        if (liff.isInClient()) {
+            initializeLIFF();
+        } else {
+            console.log('LIFF未在LINE應用中運行');
+        }
+    };
+</script>
+
 </body>
+</html>
