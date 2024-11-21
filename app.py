@@ -74,16 +74,6 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
             "系統會在第二劑接種前3天提醒您接種。"
         )
     
-    message = {
-        "to": user_id,
-        "messages": [
-            {
-                "type": "text",
-                "text": message_text
-            }
-        ]
-    }
-    
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {LINE_CHANNEL_ACCESS_TOKEN}'
