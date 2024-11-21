@@ -161,50 +161,55 @@ if (!dateInput.value) {
     dateInput.classList.remove('border-red-500');
     dateCheck.classList.remove('hidden'); // 顯示打勾
 }
-
-
         // 如果表單未通過驗證，阻止提交
         if (!formValid) {
             return;
         }
+        async function handleSubmit() {
+            const userID = document.getElementById('userID').value;
+            const userName = document.getElementById('name').value;
+            const userPhone = document.getElementById('phone').value;
+            const vaccineName = document.getElementById('vaccine').value;
+            const appointmentDate = document.getElementById('date').value;
+            const formTime = new Date().toLocaleString();
 
-        // 當表單通過驗證後，發送資料到後端
-        const userName = document.getElementById('name').value;
-        const userPhone = document.getElementById('phone').value;
-        const vaccineName = document.getElementById('vaccine').value;
-        const appointmentDate = document.getElementById('date').value;
-        const userID = document.getElementById('userID').value;
+            try {
+                // 發送資料到後端
+                const response = await fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+                });
 
-        const formTime = new Date().toISOString(); // 記錄填表時間
+                const data = await response.json();
+                
+                // 根據回應結果顯示填寫完成或失敗
+                if (data.status === 'success') {
+                    alert('填寫完成！');
+                    document.getElementById('vaccineForm').reset();  // 清空表單
+                    document.getElementById('userID').value = '';  // 清空 userID 欄位
 
-        // 發送資料至後端
-       fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-})
-.then(response => response.json())
-.then(data => {
-    console.log(data);  // 打印回應資料
-    if (data.status === 'success') {
-        alert('填寫完成！');
-        document.getElementById('vaccine-Form').reset();  // 清空表單
-        if (liff.isInClient()) {
-            liff.close();  // 關閉LIFF視窗
+                    sendReminderMessage(userID, vaccineName, appointmentDate);  // 發送提醒訊息
+
+                    if (liff.isInClient()) {
+                        await liff.close();  // 確保在資料提交後再關閉LIFF視窗
+                    }
+                } else {
+                    alert('填寫失敗，請稍後再試');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('填寫失敗，請稍後再試');
+            }
         }
-        sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫發送訊息的函數
-    } else {
-        alert('填寫失敗，請稍後再試');
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    alert('填寫失敗，請稍後再試');
-});
-    });
-</script>
+
+        // 假設的提醒訊息發送函數
+        function sendReminderMessage(userID, vaccineName, appointmentDate) {
+            console.log(`發送提醒: 用戶 ${userID}, 疫苗: ${vaccineName}, 日期: ${appointmentDate}`);
+        }
+    </script>
 <script>
     // 初始化LIFF
     function initializeLIFF() {
