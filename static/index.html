@@ -87,8 +87,16 @@
    <script>
     
    <script>
-   document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // 防止表單重新整理頁面
+let isSubmitting = false;  // 防止重複提交
+let errorDisplayed = false;  // 控制錯誤提示是否顯示過
+
+document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (isSubmitting) return;  // 如果正在提交，則阻止再次提交
+
+    isSubmitting = true;  // 開始提交
+    errorDisplayed = false;  // 每次提交時重置錯誤提示
 
     let formValid = true;
 
@@ -162,24 +170,12 @@
         dateCheck.classList.remove('hidden'); // 顯示打勾
     }
 
-    // 如果表單未通過驗證，阻止提交
-    if (!formValid) {
+     if (!formValid) {
+        isSubmitting = false;  // 表單驗證不通過，重置狀態
         return;
     }
 
-    // 當表單通過驗證後，發送資料到後端
-    const userName = document.getElementById('name').value;
-    const userPhone = document.getElementById('phone').value;
-    const vaccineName = document.getElementById('vaccine').value;
-    const appointmentDate = document.getElementById('date').value;
-    const userID = document.getElementById('userID').value;
-
-    const formTime = new Date().toISOString(); // 記錄填表時間
-
-    // 防止提交後顯示錯誤訊息
-    let isSubmitting = false;
-
-       // 如果表單驗證通過，發送資料
+    // 如果表單驗證通過，發送資料
     fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
         method: 'POST',
         headers: {
@@ -200,16 +196,18 @@
             alert('填寫完成！');  // 顯示成功訊息
             liff.close();  // 關閉LIFF
         } else {
+            // 只顯示一次錯誤訊息
             if (!errorDisplayed) {
-                alert('填寫失敗，請稍後再試');  // 顯示錯誤訊息
+                alert('填寫失敗，請稍後再試');
                 errorDisplayed = true;  // 標記錯誤提示已顯示
             }
         }
     })
     .catch(error => {
+        // 顯示錯誤提示並標記
         if (!errorDisplayed) {
-            alert('填寫失敗，請稍後再試');  // 顯示錯誤訊息
-            errorDisplayed = true;  // 標記錯誤提示已顯示
+            alert('填寫失敗，請稍後再試');
+            errorDisplayed = true;
         }
         console.error('Error:', error);
     })
