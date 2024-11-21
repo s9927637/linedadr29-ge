@@ -121,14 +121,14 @@ def save_data():
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
-        # 構建要寫入 Google Sheets 的資料
+        # 構建要寫入 Google Sheets 的資料，根據欄位順序進行設置
         if third_dose_date is None:  # 只有第二劑接種時間
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, None, data['userID'], form_time]
             ]
         else:  # 第二劑和第三劑接種時間
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date, data['userID'], form_time]
             ]
 
         body = {'values': values}
@@ -147,7 +147,6 @@ def save_data():
     except Exception as e:
         logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
 
 
 if __name__ == '__main__':
