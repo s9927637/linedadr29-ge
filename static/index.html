@@ -179,26 +179,39 @@
     // 防止提交後顯示錯誤訊息
     let isSubmitting = false;
 
-    // 發送資料至後端
+       // 如果表單驗證通過，發送資料
     fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+        body: JSON.stringify({
+            userID: document.getElementById('userID').value,
+            userName: document.getElementById('name').value,
+            userPhone: document.getElementById('phone').value,
+            vaccineName: document.getElementById('vaccine').value,
+            appointmentDate: document.getElementById('date').value,
+            formTime: new Date().toISOString(),
+        }),
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            alert('填寫完成！');  // 顯示填寫成功訊息
-            liff.close();  // 關閉LIFF視窗
+            alert('填寫完成！');  // 顯示成功訊息
+            liff.close();  // 關閉LIFF
         } else {
-            alert('填寫失敗，請稍後再試');  // 只顯示一次錯誤訊息
+            if (!errorDisplayed) {
+                alert('填寫失敗，請稍後再試');  // 顯示錯誤訊息
+                errorDisplayed = true;  // 標記錯誤提示已顯示
+            }
         }
     })
     .catch(error => {
+        if (!errorDisplayed) {
+            alert('填寫失敗，請稍後再試');  // 顯示錯誤訊息
+            errorDisplayed = true;  // 標記錯誤提示已顯示
+        }
         console.error('Error:', error);
-        alert('填寫失敗，請稍後再試');
     })
     .finally(() => {
         isSubmitting = false;  // 重置提交狀態
