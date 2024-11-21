@@ -117,19 +117,33 @@ def save_data():
         # 格式化填表時間為 XXXX年XX月XX日XX時XX分 (24小時制)
         form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
 
+        # 確保 vaccineName 存在於請求中
+        if 'vaccineName' not in data:
+            logging.error("vaccineName not provided in request data")
+            return jsonify({'status': 'error', 'message': 'vaccineName not provided'}), 400
+
+        # 確保 appointmentDate 存在於請求中
+        if 'appointmentDate' not in data:
+            logging.error("appointmentDate not provided in request data")
+            return jsonify({'status': 'error', 'message': 'appointmentDate not provided'}), 400
+
+        # 提取疫苗名稱和接種日期
+        vaccine_name = data['vaccineName']
+        appointment_date = data['appointmentDate']
+
         # 計算接種日期
-        second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
+        second_dose_date, third_dose_date = calculate_vaccine_doses(vaccine_name, appointment_date)
 
         # 構建要寫入 Google Sheets 的資料
-        if vaccine_name == '欣克疹疫苗' or vaccine_name == 'A肝疫苗':
+        if vaccine_name in ['欣克疹疫苗', 'A肝疫苗']:
             # 只填寫第二劑接種時間，第三劑欄位為 None
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], vaccine_name, second_dose_date, None, appointment_date, data['userID'], form_time]
             ]
         else:
             # 子宮頸疫苗填寫第二劑和第三劑接種時間
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], vaccine_name, second_dose_date, third_dose_date, appointment_date, data['userID'], form_time]
             ]
 
         body = {'values': values}
@@ -140,7 +154,7 @@ def save_data():
             valueInputOption='RAW', body=body).execute()
 
         # 發送 LINE 訊息
-        send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
+        send_line_message(data['userID'], vaccine_name, appointment_date, second_dose_date, third_dose_date)
 
         logging.info("Data saved successfully to Google Sheets and LINE message sent")
         return jsonify({'status': 'success', 'message': 'Data saved successfully and LINE message sent'}), 200
