@@ -82,9 +82,19 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {LINE_CHANNEL_ACCESS_TOKEN}'
     }
-    
+
+    message = {
+        "to": user_id,
+        "messages": [
+            {
+                "type": "text",
+                "text": message_text
+            }
+        ]
+    }
+
     response = requests.post(LINE_API_URL, headers=headers, json=message)
-    
+
     if response.status_code == 200:
         logging.info("LINE 訊息發送成功")
     else:
