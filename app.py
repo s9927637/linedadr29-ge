@@ -157,6 +157,11 @@ def save_data():
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+# 檢查 userID 是否有效
+if not data.get('userID') or data['userID'].strip() == '':
+    logging.error(f"缺少有效的 userID，請求資料: {data}")
+    return jsonify({'status': 'error', 'message': '缺少有效的 userID'}), 400
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
