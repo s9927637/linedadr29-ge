@@ -77,14 +77,6 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
             f"你的接種疫苗：{vaccine_name}，接種日期是{first_dose_date}，第二劑接種時間：{second_dose_date}。\n"
             "系統會在第二劑接種前3天提醒您接種。"
         )
-    
-    message = {
-        'to': user_id,
-        'messages': [{
-            'type': 'text',
-            'text': message_text
-        }]
-    }
 
     headers = {
         'Content-Type': 'application/json',
