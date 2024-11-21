@@ -117,13 +117,13 @@ def save_data():
         
         logging.debug(f"接收到資料: {data}")
 
-        # 確保填表時間格式正確並以24小時制顯示
-        form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
-
         # 檢查 userID 是否存在
         if not data.get('userID'):
-            logging.error("缺少 userID")
+            logging.error(f"缺少 userID，請求資料: {data}")
             return jsonify({'status': 'error', 'message': '缺少 userID'}), 400
+
+        # 確保填表時間格式正確並以24小時制顯示
+        form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
 
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
@@ -154,6 +154,7 @@ def save_data():
     except Exception as e:
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
