@@ -124,12 +124,12 @@ def save_data():
         if vaccine_name == '欣克疹疫苗' or vaccine_name == 'A肝疫苗':
             # 只填寫第二劑接種時間，第三劑欄位為 None
             values = [
-                [data['vaccineName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, None, data['appointmentDate'], data['userID'], form_time]
             ]
         else:
             # 子宮頸疫苗填寫第二劑和第三劑接種時間
             values = [
-                [data['vaccineName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
+                [data['userName'], data['userPhone'], data['vaccineName'], second_dose_date, third_dose_date, data['appointmentDate'], data['userID'], form_time]
             ]
 
         body = {'values': values}
