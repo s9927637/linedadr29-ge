@@ -115,7 +115,7 @@ def save_data():
         
         logging.debug(f"Received data: {data}")
 
-        # 格式化填表時間為 XXXX年XX月XX日XX時XX分 (24小時制)
+        # 確保填表時間格式正確並以24小時制顯示
         form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
 
         # 計算接種日期
@@ -147,7 +147,6 @@ def save_data():
     except Exception as e:
         logging.error(f"Error occurred while saving data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
 
 
 
