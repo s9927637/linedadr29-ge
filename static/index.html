@@ -163,7 +163,7 @@ if (!dateInput.value) {
 }
 
 
-          // 如果表單未通過驗證，阻止提交
+            // 如果表單未通過驗證，阻止提交
             if (!formValid) return;
 
             // 當表單通過驗證後，發送資料到後端
@@ -183,12 +183,7 @@ if (!dateInput.value) {
             .then(data => {
                 if (data.status === 'success') {
                     alert('填寫完成！');
-                    try {
-                        liff.close(); // 嘗試關閉 LIFF 視窗
-                    } catch (err) {
-                        console.error('LIFF 視窗關閉失敗:', err);
-                        alert('請手動關閉視窗');
-                    }
+                    liff.close(); // 嘗試關閉 LIFF 視窗
                 }
             })
             .catch(error => {
