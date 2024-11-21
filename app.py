@@ -74,6 +74,14 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
             "系統會在第二劑接種前3天提醒您接種。"
         )
     
+    message = {
+        'to': user_id,
+        'messages': [{
+            'type': 'text',
+            'text': message_text
+        }]
+    }
+
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {LINE_CHANNEL_ACCESS_TOKEN}'
@@ -82,9 +90,9 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
     response = requests.post(LINE_API_URL, headers=headers, json=message)
     
     if response.status_code == 200:
-        logging.info("LINE message sent successfully")
+        logging.info("LINE 訊息發送成功")
     else:
-        logging.error(f"Failed to send LINE message: {response.text}")
+        logging.error(f"發送 LINE 訊息失敗: {response.text}")
 
 
 # 根路由處理 index.html
@@ -100,10 +108,10 @@ def save_data():
         # 檢查 JSON 請求格式
         data = request.get_json()
         if data is None:
-            logging.error("Invalid JSON format in request")
-            return jsonify({'status': 'error', 'message': 'Invalid JSON format'}), 400
+            logging.error("請求中的 JSON 格式無效")
+            return jsonify({'status': 'error', 'message': '無效的 JSON 格式'}), 400
         
-        logging.debug(f"Received data: {data}")
+        logging.debug(f"接收到資料: {data}")
 
         # 確保填表時間格式正確並以24小時制顯示
         form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
@@ -123,7 +131,7 @@ def save_data():
 
         body = {'values': values}
 
-        logging.debug(f"Writing data to Google Sheets: {values}")
+        logging.debug(f"寫入 Google Sheets 的資料: {values}")
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
@@ -131,11 +139,11 @@ def save_data():
         # 發送 LINE 訊息
         send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
 
-        logging.info("Data saved successfully to Google Sheets and LINE message sent")
-        return jsonify({'status': 'success', 'message': 'Data saved successfully and LINE message sent'}), 200
+        logging.info("資料成功儲存至 Google Sheets 且 LINE 訊息已發送")
+        return jsonify({'status': 'success', 'message': '資料成功儲存並發送 LINE 訊息'}), 200
 
     except Exception as e:
-        logging.error(f"Error occurred while saving data: {e}")
+        logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
