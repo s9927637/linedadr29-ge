@@ -174,82 +174,7 @@
     </div>
     
    <script>
-            let formValid = true;
-
-            // 姓名驗證
-            const nameInput = document.getElementById('name');
-            const nameError = document.getElementById('name-error');
-            const nameCheck = document.getElementById('name-check');
-            const nameValue = nameInput.value.trim();
-
-            if (!/^[\u4e00-\u9fa5a-zA-Z\s]+$/.test(nameValue)) {
-                formValid = false;
-                nameError.classList.remove('hidden');
-                nameInput.classList.add('border-red-500');
-                nameInput.focus();
-                nameCheck.classList.add('hidden');  // 隱藏打勾
-            } else {
-                nameError.classList.add('hidden');
-                nameInput.classList.remove('border-red-500');
-                nameCheck.classList.remove('hidden'); // 顯示打勾
-            }
-
-            // 電話驗證
-            const phoneInput = document.getElementById('phone');
-            const phoneError = document.getElementById('phone-error');
-            const phoneCheck = document.getElementById('phone-check');
-            const phoneValue = phoneInput.value.trim();
-
-            if (!/^\d{10}$/.test(phoneValue)) {
-                formValid = false;
-                phoneError.classList.remove('hidden');
-                phoneInput.classList.add('border-red-500');
-                phoneInput.focus();
-                phoneCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                phoneError.classList.add('hidden');
-                phoneInput.classList.remove('border-red-500');
-                phoneCheck.classList.remove('hidden'); // 顯示打勾
-            }
-
-            // 疫苗名稱驗證
-            const vaccineInput = document.getElementById('vaccine');
-            const vaccineError = document.getElementById('vaccine-error');
-            const vaccineCheck = document.getElementById('vaccine-check');
-
-            if (!vaccineInput.value) {
-                formValid = false;
-                vaccineError.classList.remove('hidden');
-                vaccineInput.classList.add('border-red-500');
-                vaccineInput.focus();
-                vaccineCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                vaccineError.classList.add('hidden');
-                vaccineInput.classList.remove('border-red-500');
-                vaccineCheck.classList.remove('hidden'); // 顯示打勾
-            }
-
-            // 日期驗證
-            const dateInput = document.getElementById('date');
-            const dateError = document.getElementById('date-error');
-            const dateCheck = document.getElementById('date-check');
-
-            if (!dateInput.value) {
-                formValid = false;
-                dateError.classList.remove('hidden');
-                dateInput.classList.add('border-red-500');
-                dateInput.focus();
-                dateCheck.classList.add('hidden'); // 隱藏打勾
-            } else {
-                dateError.classList.add('hidden');
-                dateInput.classList.remove('border-red-500');
-                dateCheck.classList.remove('hidden'); // 顯示打勾
-            }
-
-            // 如果表單未通過驗證，阻止提交
-            if (!formValid) return;
-
-   // 表單提交事件
+               // 表單提交事件
     document.getElementById('vaccine-form').addEventListener('submit', function(event) {
         event.preventDefault(); // 防止表單重新整理頁面
 
@@ -389,7 +314,6 @@ if (!dateInput.value) {
             console.log('LIFF未在LINE應用中運行');
         }
     };
-
-    </script>
+</script>
 </body>
 </html>
