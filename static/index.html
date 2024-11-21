@@ -84,13 +84,13 @@
             </form>
         </div>
     </div>
-    <script>
+   <script>
   function submitForm() {
     // 禁用按鈕
     document.getElementById("submitButton").disabled = true;
 
     // 執行資料提交請求
-    fetch('後端API端點', {
+    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
       method: 'POST',
       body: JSON.stringify(formData),
       headers: { 'Content-Type': 'application/json' }
@@ -110,6 +110,7 @@
     });
   }
 </script>
+    
    <script>
     // 表單提交事件
     document.getElementById('vaccine-form').addEventListener('submit', function(event) {
