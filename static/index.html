@@ -258,15 +258,16 @@
         // 當表單通過驗證後，發送資料到後端
         const userName = document.getElementById('name').value;
         const userPhone = document.getElementById('phone').value;
-        const vaccineName = document.getElementById('vaccine').value;
-        const appointmentDate = document.getElementById('date').value;
+        const userVaccine = document.getElementById('vaccine').value;
+        const userDate = document.getElementById('date').value;
         const userID = document.getElementById('userID').value;
 
-        const data = {
+        // 這裡可以根據需求將資料發送到後端或進行其他操作
+        const formData = {
             name: userName,
             phone: userPhone,
-            vaccine: vaccineName,
-            date: appointmentDate,
+            vaccine: userVaccine,
+            date: userDate,
             userID: userID
         };
 
