@@ -219,20 +219,23 @@ function initializeLIFF() {
     liff.init({ liffId: "2003645883-Rn6V0a3n" })
         .then(() => {
             console.log("LIFF 初始化成功");
+
+            // 檢查用戶是否已經登入 LINE
             if (!liff.isLoggedIn()) {
                 console.log("用戶尚未登入 LINE，請先登入");
-                liff.login();  // If the user is not logged in, force login
+                liff.login();  // 如果用戶未登入，強制登入
             } else {
-                return liff.getProfile();
+                return liff.getProfile(); // 如果已經登入，獲取用戶資料
             }
         })
         .then(profile => {
             console.log("用戶資料:", profile);
-            console.log("用戶ID:", profile.userId);  // Display user ID
-            document.getElementById('userID').value = profile.userId; // Set user ID in hidden input field
+            console.log("用戶ID:", profile.userId);  // 顯示用戶 ID
+            document.getElementById('userID').value = profile.userId; // 將用戶 ID 設置到隱藏欄位
         })
         .catch((err) => {
             console.error("LIFF 初始化錯誤:", err);
+            alert("獲取用戶資料失敗，請重新登入 LINE。");
         });
 }
 
