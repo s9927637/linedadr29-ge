@@ -86,6 +86,94 @@
     </div>
     
    <script>
+           <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疫苗接種提醒表單</title>
+    <script src="https://static.line-scdn.net/liff/2.2/sdk.js"></script>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+       <style>
+        select, input[type="date"] {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 10px center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+        }
+.checkmark {
+    position: absolute;
+    right: 0.5rem;
+    top: 1.5rem;
+    color: green;
+    font-size: 1.5rem; /* 調整大小 */
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <div class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md sm:max-w-lg md:max-w-xl">
+            <h2 class="text-2xl font-bold text-center mb-10 text-gray-800 pt-2">疫苗接種提醒通知</h2>
+            <form id="vaccine-form" method="POST" class="space-y-6">
+                <!-- 姓名 -->
+                <div class="relative">
+                    <label for="name" class="block text-sm font-medium text-gray-900">姓名</label>
+                    <input type="text" id="name" name="name" required pattern="^[\u4e00-\u9fa5a-zA-Z\s]+$"
+                        class="mt-2.5 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                    <span id="name-check" class="checkmark">&#10003;</span>
+                    <p id="name-error" class="mt-1 text-red-500 text-sm hidden">姓名只能是含中文或英文，不能是數字或特殊符號</p>
+                </div>
+
+                <!-- 電話 -->
+                <div class="relative">
+                    <label for="phone" class="block text-sm font-medium text-gray-900">電話</label>
+                    <input type="text" id="phone" name="phone" required inputmode="numeric" pattern="\d*"
+                        class="mt-2.5 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                    <span id="phone-check" class="checkmark">&#10003;</span>
+                    <p id="phone-error" class="mt-1 text-red-500 text-sm hidden">請輸入有效的 10 位數電話號碼</p>
+                </div>
+
+                <!-- 疫苗名稱 -->
+                <div class="relative">
+                    <label for="vaccine" class="block text-sm font-medium text-gray-900">疫苗名稱</label>
+                    <select id="vaccine" name="vaccine" required
+                        class="text-sm mt-2.5 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 bg-white">
+                        <option value="" disabled selected>請選擇疫苗名稱</option>
+                        <option value="子宮頸疫苗">子宮頸疫苗</option>
+                        <option value="欣克疹疫苗">欣克疹疫苗</option>
+                        <option value="A肝疫苗">A肝疫苗</option>
+                    </select>
+                    <span id="vaccine-check" class="checkmark">&#10003;</span>
+                    <p id="vaccine-error" class="mt-1 text-red-500 text-sm hidden">請選擇疫苗名稱。</p>
+                </div>
+
+                <!-- 接種日期 -->
+                <div class="relative">
+                    <label for="date" class="block text-sm font-medium text-gray-900">接種日期</label>
+                    <input type="date" id="date" name="date" required
+                        class="text-sm mt-2.5 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 bg-white">
+                    <span id="date-check" class="checkmark">&#10003;</span>
+                    <p id="date-error" class="mt-1 text-red-500 text-sm hidden">請選擇接種日期。</p>
+                </div>
+
+                <!-- 隱藏字段 -->
+                <input type="hidden" id="userID" name="userID">
+
+                <!-- 提交按鈕 -->
+                <div class="flex justify-center pt-8">
+                    <button type="submit"
+                        class="w-full md:w-auto bg-indigo-600 text-white font-medium py-2 px-6 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        提交預約
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+   <script>
             let formValid = true;
 
             // 姓名驗證
@@ -161,64 +249,146 @@
             // 如果表單未通過驗證，阻止提交
             if (!formValid) return;
 
-           // 表單提交事件
-document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // 防止表單重新整理頁面
+   // 表單提交事件
+    document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // 防止表單重新整理頁面
 
-    let formValid = true;
-    // ...驗證邏輯
+        let formValid = true;
 
-    // 如果表單未通過驗證，阻止提交
-    if (!formValid) return;
+       // 姓名驗證
+const nameInput = document.getElementById('name');
+const nameError = document.getElementById('name-error');
+const nameCheck = document.getElementById('name-check');
+const nameValue = nameInput.value.trim();
 
-    console.log("表單驗證通過，準備提交資料");
+if (!/^[\u4e00-\u9fa5a-zA-Z\s]+$/.test(nameValue)) {
+    formValid = false;
+    nameError.classList.remove('hidden');
+    nameInput.classList.add('border-red-500');
+    nameInput.focus();
+    nameCheck.classList.add('hidden');  // 隱藏打勾
+} else {
+    nameError.classList.add('hidden');
+    nameInput.classList.remove('border-red-500');
+    nameCheck.classList.remove('hidden'); // 顯示打勾
+}
 
-    // 發送資料至後端
-    const userName = nameValue;
-    const userPhone = phoneValue;
-    const vaccineName = vaccineInput.value;
-    const appointmentDate = dateInput.value;
-    const userID = document.getElementById('userID').value;
-    const formTime = new Date().toISOString();
+// 電話驗證
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phone-error');
+const phoneCheck = document.getElementById('phone-check');
+const phoneValue = phoneInput.value.trim();
 
-    if (!userID) {
-        console.error('缺少 userID');
-        alert('請先登入 LINE');
-        return;
+if (!/^\d{10}$/.test(phoneValue)) {
+    formValid = false;
+    phoneError.classList.remove('hidden');
+    phoneInput.classList.add('border-red-500');
+    phoneInput.focus();
+    phoneCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    phoneError.classList.add('hidden');
+    phoneInput.classList.remove('border-red-500');
+    phoneCheck.classList.remove('hidden'); // 顯示打勾
+}
+
+// 疫苗名稱驗證
+const vaccineInput = document.getElementById('vaccine');
+const vaccineError = document.getElementById('vaccine-error');
+const vaccineCheck = document.getElementById('vaccine-check');
+
+if (!vaccineInput.value) {
+    formValid = false;
+    vaccineError.classList.remove('hidden');
+    vaccineInput.classList.add('border-red-500');
+    vaccineInput.focus();
+    vaccineCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    vaccineError.classList.add('hidden');
+    vaccineInput.classList.remove('border-red-500');
+    vaccineCheck.classList.remove('hidden'); // 顯示打勾
+}
+
+// 日期驗證
+const dateInput = document.getElementById('date');
+const dateError = document.getElementById('date-error');
+const dateCheck = document.getElementById('date-check');
+
+if (!dateInput.value) {
+    formValid = false;
+    dateError.classList.remove('hidden');
+    dateInput.classList.add('border-red-500');
+    dateInput.focus();
+    dateCheck.classList.add('hidden'); // 隱藏打勾
+} else {
+    dateError.classList.add('hidden');
+    dateInput.classList.remove('border-red-500');
+    dateCheck.classList.remove('hidden'); // 顯示打勾
+}
+
+
+        // 如果表單未通過驗證，阻止提交
+        if (!formValid) {
+            return;
+        }
+
+        // 當表單通過驗證後，發送資料到後端
+        const userName = document.getElementById('name').value;
+        const userPhone = document.getElementById('phone').value;
+        const vaccineName = document.getElementById('vaccine').value;
+        const appointmentDate = document.getElementById('date').value;
+        const userID = document.getElementById('userID').value;
+
+        const formTime = new Date().toISOString(); // 記錄填表時間
+
+               // 發送資料至後端
+        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('填寫完成！');  // 顯示填寫成功訊息
+                liff.close();  // 關閉LIFF視窗
+
+                // 在LINE BOT中回覆訊息
+                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('填寫失敗，請稍後再試');
+        });
+    });
+</script>
+<script>
+    // 初始化LIFF
+    function initializeLIFF() {
+        liff.init({ liffId: "2003645883-Rn6V0a3n" })
+            .then(() => {
+                // 獲取用戶的userID
+                return liff.getProfile();
+            })
+            .then(profile => {
+                // 將用戶ID設置為隱藏欄位
+                document.getElementById('userID').value = profile.userId;
+            })
+            .catch(err => {
+                console.error('LIFF初始化錯誤:', err);
+            });
     }
 
-    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`伺服器錯誤，狀態碼：${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('伺服器回應:', data);
-        if (data.status === 'success') {
-            alert('填寫完成！');
-            if (liff.isInClient()) {
-                console.log("LIFF 內部環境，關閉視窗...");
-                try {
-                    liff.close(); // 關閉 LIFF 視窗
-                } catch (err) {
-                    console.error('LIFF 關閉失敗：', err);
-                }
-            }
+    // 等待LIFF加載完成後初始化
+    window.onload = function() {
+        if (liff.isInClient()) {
+            initializeLIFF();
         } else {
-            throw new Error('伺服器回傳失敗狀態');
+            console.log('LIFF未在LINE應用中運行');
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('填寫失敗，請稍後再試');
-    });
-});
+    };
 
     </script>
 </body>
