@@ -26,7 +26,7 @@ if not SPREADSHEET_ID:
     logging.error("環境變數 'SPREADSHEET_ID' 未設置")
     raise ValueError("環境變數 'SPREADSHEET_ID' 未設置")
 
-RANGE_NAME = 'Sheet1!A2:F2'  # 更新範圍，第二劑和第三劑接種時間在疫苗名稱後面
+RANGE_NAME = 'Sheet1!A2:H2'  # 更新範圍，第二劑和第三劑接種時間在疫苗名稱後面
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
