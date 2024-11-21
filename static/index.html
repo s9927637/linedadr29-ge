@@ -163,70 +163,58 @@ if (!dateInput.value) {
 }
 
 
-        // 如果表單未通過驗證，阻止提交
-        if (!formValid) {
-            return;
-        }
+          // 如果表單未通過驗證，阻止提交
+            if (!formValid) return;
 
-        // 當表單通過驗證後，發送資料到後端
-        const userName = document.getElementById('name').value;
-        const userPhone = document.getElementById('phone').value;
-        const vaccineName = document.getElementById('vaccine').value;
-        const appointmentDate = document.getElementById('date').value;
-        const userID = document.getElementById('userID').value;
+            // 當表單通過驗證後，發送資料到後端
+            const userName = nameValue;
+            const userPhone = phoneValue;
+            const vaccineName = vaccineInput.value;
+            const appointmentDate = dateInput.value;
+            const userID = document.getElementById('userID').value;
+            const formTime = new Date().toISOString(); // 填表時間
 
-        const formTime = new Date().toISOString(); // 記錄填表時間
-
-               // 發送資料至後端
-        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('填寫完成！');  // 顯示填寫成功訊息
-                liff.close();  // 關閉LIFF視窗
-
-                // 在LINE BOT中回覆訊息
-                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('填寫失敗，請稍後再試');
-        });
-    });
-</script>
-<script>
-    // 初始化LIFF
-    function initializeLIFF() {
-        liff.init({ liffId: "2003645883-Rn6V0a3n" })
-            .then(() => {
-                // 獲取用戶的userID
-                return liff.getProfile();
+            fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
             })
-            .then(profile => {
-                // 將用戶ID設置為隱藏欄位
-                document.getElementById('userID').value = profile.userId;
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('填寫完成！');
+                    try {
+                        liff.close(); // 嘗試關閉 LIFF 視窗
+                    } catch (err) {
+                        console.error('LIFF 視窗關閉失敗:', err);
+                        alert('請手動關閉視窗');
+                    }
+                }
             })
-            .catch(err => {
-                console.error('LIFF初始化錯誤:', err);
+            .catch(error => {
+                console.error('Error:', error);
+                alert('填寫失敗，請稍後再試');
             });
-    }
+        });
 
-    // 等待LIFF加載完成後初始化
-    window.onload = function() {
-        if (liff.isInClient()) {
-            initializeLIFF();
-        } else {
-            console.log('LIFF未在LINE應用中運行');
+        // 初始化 LIFF
+        function initializeLIFF() {
+            liff.init({ liffId: "2003645883-Rn6V0a3n" })
+                .then(() => liff.getProfile())
+                .then(profile => {
+                    document.getElementById('userID').value = profile.userId;
+                })
+                .catch(err => console.error('LIFF 初始化失敗:', err));
         }
-    };
-</script>
 
+        // 等待 LIFF 加載完成後初始化
+        window.onload = function() {
+            if (liff.isInClient()) {
+                initializeLIFF();
+            } else {
+                console.log('LIFF 未在 LINE 應用中運行');
+            }
+        };
+    </script>
 </body>
 </html>
