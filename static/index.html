@@ -85,31 +85,6 @@
         </div>
     </div>
    <script>
-  function submitForm() {
-    // 禁用按鈕
-    document.getElementById("submitButton").disabled = true;
-
-    // 執行資料提交請求
-    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-      if (response.ok) {
-        // 處理成功回應
-        alert('資料已成功提交');
-      } else {
-        // 處理錯誤回應
-        alert('提交失敗，請稍後再試');
-      }
-    })
-    .finally(() => {
-      // 無論結果如何，啟用提交按鈕
-      document.getElementById("submitButton").disabled = false;
-    });
-  }
-</script>
     
    <script>
     // 表單提交事件
