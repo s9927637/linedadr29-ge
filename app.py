@@ -107,7 +107,6 @@ def index():
     return send_from_directory('static', 'index.html')
 
 
-# 處理 /saveData 路由的 POST 請求
 @app.route('/saveData', methods=['POST'])
 def save_data():
     try:
@@ -156,11 +155,6 @@ def save_data():
     except Exception as e:
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
-# 檢查 userID 是否有效
-if not data.get('userID') or data['userID'].strip() == '':
-    logging.error(f"缺少有效的 userID，請求資料: {data}")
-    return jsonify({'status': 'error', 'message': '缺少有效的 userID'}), 400
 
 
 if __name__ == '__main__':
