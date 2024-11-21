@@ -86,10 +86,6 @@
     </div>
     
    <script>
-        // 表單提交事件
-        document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // 防止表單重新整理頁面
-
             let formValid = true;
 
             // 姓名驗證
@@ -165,28 +161,32 @@
             // 如果表單未通過驗證，阻止提交
             if (!formValid) return;
 
-            console.log("表單驗證通過，準備提交資料");
+           // 表單提交事件
+document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // 防止表單重新整理頁面
 
-            // 當表單通過驗證後，發送資料到後端
-const formSubmitButton = document.getElementById('vaccine-form'); // 假設有一個提交按鈕
+    let formValid = true;
+    // ...驗證邏輯
 
-formSubmitButton.addEventListener('click', () => {
-    // 獲取表單資料
-    const userName = nameValue; // 用戶姓名
-    const userPhone = phoneValue; // 用戶電話
-    const vaccineName = vaccineInput.value; // 選擇的疫苗名稱
-    const appointmentDate = dateInput.value; // 選擇的接種日期
-    const userID = document.getElementById('userID').value; // 用戶ID，來自LIFF
-    const formTime = new Date().toISOString(); // 記錄填表時間
+    // 如果表單未通過驗證，阻止提交
+    if (!formValid) return;
 
-    // 檢查是否有 userID
+    console.log("表單驗證通過，準備提交資料");
+
+    // 發送資料至後端
+    const userName = nameValue;
+    const userPhone = phoneValue;
+    const vaccineName = vaccineInput.value;
+    const appointmentDate = dateInput.value;
+    const userID = document.getElementById('userID').value;
+    const formTime = new Date().toISOString();
+
     if (!userID) {
         console.error('缺少 userID');
         alert('請先登入 LINE');
         return;
     }
 
-    // 發送資料至後端
     fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,8 +201,7 @@ formSubmitButton.addEventListener('click', () => {
     .then(data => {
         console.log('伺服器回應:', data);
         if (data.status === 'success') {
-            alert('填寫完成！'); // 顯示成功訊息
-            // 嘗試關閉 LIFF 視窗
+            alert('填寫完成！');
             if (liff.isInClient()) {
                 console.log("LIFF 內部環境，關閉視窗...");
                 try {
@@ -210,8 +209,6 @@ formSubmitButton.addEventListener('click', () => {
                 } catch (err) {
                     console.error('LIFF 關閉失敗：', err);
                 }
-            } else {
-                console.log("不在 LINE 客戶端中，無法關閉 LIFF 視窗");
             }
         } else {
             throw new Error('伺服器回傳失敗狀態');
@@ -223,42 +220,6 @@ formSubmitButton.addEventListener('click', () => {
     });
 });
 
-// 初始化 LIFF
-function initializeLIFF() {
-    console.log("初始化 LIFF...");
-    liff.init({ liffId: "2003645883-Rn6V0a3n" })
-        .then(() => {
-            console.log("LIFF 初始化成功");
-            if (!liff.isLoggedIn()) {
-                console.log("用戶尚未登入 LINE，請先登入");
-                liff.login();  // 如果用戶尚未登入，強制登入
-            } else {
-                return liff.getProfile(); // 獲取用戶資料
-            }
-        })
-        .then(profile => {
-            console.log("用戶資料:", profile);
-            console.log("用戶ID:", profile.userId);  // 顯示用戶 ID
-            document.getElementById('userID').value = profile.userId; // 設定 userID 到隱藏的輸入欄位
-        })
-        .catch((err) => {
-            console.error("LIFF 初始化錯誤:", err);
-            if (err.code === 1002) {
-                alert("LIFF 錯誤: 使用者未登入 LINE，請登入後再試。");
-            } else {
-                alert("LIFF 初始化錯誤: " + err.message);
-            }
-        });
-}
-
-// 頁面加載時初始化 LIFF
-window.onload = () => {
-    if (liff.isInClient()) {
-        initializeLIFF();
-    } else {
-        alert("請在 LINE 應用程式內填寫表單");
-    }
-};
     </script>
 </body>
 </html>
