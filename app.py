@@ -63,6 +63,10 @@ def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
 
 # 發送 LINE 訊息
 def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
+    if not user_id:
+        logging.error("無效的 user_id: 未提供 user_id")
+        return
+
     if third_dose_date:
         message_text = (
             f"你的接種疫苗：{vaccine_name}，接種日期是{first_dose_date}，第二劑接種時間：{second_dose_date}，第三劑接種時間：{third_dose_date}。\n"
@@ -116,6 +120,11 @@ def save_data():
         # 確保填表時間格式正確並以24小時制顯示
         form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
 
+        # 檢查 userID 是否存在
+        if not data.get('userID'):
+            logging.error("缺少 userID")
+            return jsonify({'status': 'error', 'message': '缺少 userID'}), 400
+
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
@@ -145,7 +154,6 @@ def save_data():
     except Exception as e:
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
