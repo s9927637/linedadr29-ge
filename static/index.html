@@ -219,12 +219,17 @@ function initializeLIFF() {
     liff.init({ liffId: "2003645883-Rn6V0a3n" })
         .then(() => {
             console.log("LIFF 初始化成功");
-            return liff.getProfile();
+            if (!liff.isLoggedIn()) {
+                console.log("用戶尚未登入 LINE，請先登入");
+                liff.login();  // If the user is not logged in, force login
+            } else {
+                return liff.getProfile();
+            }
         })
         .then(profile => {
             console.log("用戶資料:", profile);
-            console.log("用戶ID:", profile.userId);  // 顯示用戶ID以便驗證
-            document.getElementById('userID').value = profile.userId; // 設置用戶 ID 到隱藏輸入框
+            console.log("用戶ID:", profile.userId);  // Display user ID
+            document.getElementById('userID').value = profile.userId; // Set user ID in hidden input field
         })
         .catch((err) => {
             console.error("LIFF 初始化錯誤:", err);
