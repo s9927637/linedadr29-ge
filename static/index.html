@@ -168,7 +168,7 @@ if (!dateInput.value) {
             return;
         }
 
-        // 當表單通過驗證後，發送資料到後端
+    // 當表單通過驗證後，發送資料到後端
     const userName = document.getElementById('name').value;
     const userPhone = document.getElementById('phone').value;
     const vaccineName = document.getElementById('vaccine').value;
@@ -186,13 +186,15 @@ if (!dateInput.value) {
         body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
     })
     .then(response => {
+        console.log('Response status:', response.status); // 日誌輸出回應狀態
         if (!response.ok) {
             throw new Error('Network response was not ok'); // 檢查網路回應
         }
         return response.json();
     })
     .then(data => {
-        if (data.status === 'success') {
+        console.log('Response data:', data); // 日誌輸出回應數據
+        if (data.status && data.status === 'success') {
             alert('填寫完成！');  // 顯示填寫成功訊息
             liff.close();  // 關閉LIFF視窗
         } else {
