@@ -178,33 +178,28 @@ if (!dateInput.value) {
         const formTime = new Date().toISOString(); // 記錄填表時間
 
         // 發送資料至後端
-        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
     method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
 })
 .then(response => {
-    console.log('Response status:', response.status); // 日誌輸出回應狀態
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(`HTTP錯誤！狀態碼：${response.status}`);
     }
     return response.json();
 })
 .then(data => {
-    console.log('Response data:', data); // 日誌輸出回應數據
     if (data.status === 'success') {
         alert('填寫完成！');
-        liff.close();  // 關閉LIFF視窗
+        liff.close();
     } else {
-        console.error('後端回應的狀態不是成功:', data.status); // 日誌輸出狀態
-        alert('填寫失敗，請稍後再試');
+        alert('填寫失敗，請稍後再試。');
     }
 })
 .catch(error => {
-    console.error('Error:', error);
-    alert('填寫失敗，請稍後再試');
+    console.error('提交過程中出錯：', error);
+    alert('網絡異常或伺服器無法響應，請稍後再試。');
 });
 </script>
 <script>
