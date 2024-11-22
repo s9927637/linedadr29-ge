@@ -186,33 +186,32 @@ if (!dateInput.value) {
         const formTime = new Date().toISOString(); // 記錄填表時間
 
        // 發送資料至後端
-    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('填寫完成！');  // 顯示填寫成功訊息
-            liff.close();  // 關閉LIFF視窗
-        } else {
-            alert('填寫失敗，請稍後再試'); // 如果後端返回的狀態不是成功
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        if (!hasShownError) {
-            alert('填寫失敗，請稍後再試');
-            hasShownError = true; // 設置為已顯示
-        }
-    })
-    .finally(() => {
-        // 無論請求成功或失敗，重新啟用提交按鈕
-        submitButton.disabled = false;
-    });
+   fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json(); // 解析 JSON
+})
+.then(data => {
+    console.log('Response data:', data); // 日誌輸出回應數據
+    if (data.status === 'success') {
+        alert('填寫完成！');
+        liff.close();  // 關閉LIFF視窗
+    } else {
+        console.error('後端回應的狀態不是成功:', data.status);
+        alert('填寫失敗，請稍後再試');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('填寫失敗，請稍後再試');
 });
 </script>
 <script>
