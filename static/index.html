@@ -240,6 +240,59 @@ if (!dateInput.value) {
         }
     };
 </script>
+<script>
+function logError(message) {
+    fetch('https://linedadr29ga.hkg1.zeabur.app/log', {  // 替換為您的後端 URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('日誌發送失敗:', response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error('日誌發送時發生錯誤:', error);
+    });
+}
 
+// 在發生錯誤時調用 logError 函數
+document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // 防止表單重新整理頁面
+
+    // 發送資料至後端
+    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            alert('填寫完成！');
+            liff.close();  // 關閉LIFF視窗
+        } else {
+            console.error('後端回應的狀態不是成功:', data.status);
+            logError('填寫失敗，後端回應狀態: ' + data.status); // 記錄錯誤
+            alert('填寫失敗，請稍後再試');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        logError('填寫失敗，錯誤信息: ' + error.message); // 記錄錯誤
+        alert('填寫失敗，請稍後再試');
+    });
+});
+</script>
 </body>
 </html>
