@@ -168,44 +168,38 @@ if (!dateInput.value) {
             return;
         }
 
-    // 當表單通過驗證後，發送資料到後端
-    const userName = document.getElementById('name').value;
-    const userPhone = document.getElementById('phone').value;
-    const vaccineName = document.getElementById('vaccine').value;
-    const appointmentDate = document.getElementById('date').value;
-    const userID = document.getElementById('userID').value;
+        // 當表單通過驗證後，發送資料到後端
+        const userName = document.getElementById('name').value;
+        const userPhone = document.getElementById('phone').value;
+        const vaccineName = document.getElementById('vaccine').value;
+        const appointmentDate = document.getElementById('date').value;
+        const userID = document.getElementById('userID').value;
 
-    const formTime = new Date().toISOString(); // 記錄填表時間
+        const formTime = new Date().toISOString(); // 記錄填表時間
 
-    // 發送資料至後端
-      fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-       method: 'POST',
-       headers: {
-           'Content-Type': 'application/json',
-       },
-       body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-   })
-   .then(response => {
-       console.log('Response status:', response.status); // 日誌輸出回應狀態
-       if (!response.ok) {
-           throw new Error('Network response was not ok');
-       }
-       return response.json();
-   })
-   .then(data => {
-       console.log('Response data:', data); // 日誌輸出回應數據
-       if (data.status === 'success') {
-           alert('填寫完成！');
-           liff.close();  // 關閉LIFF視窗
-       } else {
-           console.error('後端回應的狀態不是成功:', data.status); // 日誌輸出狀態
-           alert('填寫失敗，請稍後再試');
-       }
-   })
-   .catch(error => {
-       console.error('Error:', error);
-       alert('填寫失敗，請稍後再試');
-   });
+        // 發送資料至後端
+        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('填寫完成！');  // 顯示填寫成功訊息
+                liff.close();  // 關閉LIFF視窗
+
+                // 在LINE BOT中回覆訊息
+                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('填寫失敗，請稍後再試');
+        });
+    });
 </script>
 <script>
     // 初始化LIFF
