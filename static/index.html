@@ -178,29 +178,25 @@ if (!dateInput.value) {
         const formTime = new Date().toISOString(); // 記錄填表時間
 
         // 發送資料至後端
-fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error(`HTTP錯誤！狀態碼：${response.status}`);
-    }
-    return response.json();
-})
-.then(data => {
-    if (data.status === 'success') {
-        alert('填寫完成！');
-        liff.close();
-    } else {
-        alert('填寫失敗，請稍後再試。');
-    }
-})
-.catch(error => {
-    console.error('提交過程中出錯：', error);
-    alert('網絡異常或伺服器無法響應，請稍後再試。');
-});
+        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('填寫完成！');  // 顯示填寫成功訊息
+                liff.close();  // 關閉LIFF視窗
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('填寫失敗，請稍後再試');
+        });
+    });
 </script>
 <script>
     // 初始化LIFF
