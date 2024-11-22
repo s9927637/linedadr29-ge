@@ -70,7 +70,7 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
 
     if third_dose_date:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}n\第三劑接種時間：{third_dose_date}。\n"
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
             "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
         )
     else:
