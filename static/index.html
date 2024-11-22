@@ -168,37 +168,36 @@ if (!dateInput.value) {
             return;
         }
 
-        // 當表單通過驗證後，發送資料到後端
-        const userName = document.getElementById('name').value;
-        const userPhone = document.getElementById('phone').value;
-        const vaccineName = document.getElementById('vaccine').value;
-        const appointmentDate = document.getElementById('date').value;
-        const userID = document.getElementById('userID').value;
+         // 當表單通過驗證後，發送資料到後端
+    const userName = document.getElementById('name').value;
+    const userPhone = document.getElementById('phone').value;
+    const vaccineName = document.getElementById('vaccine').value;
+    const appointmentDate = document.getElementById('date').value;
+    const userID = document.getElementById('userID').value;
 
-        const formTime = new Date().toISOString(); // 記錄填表時間
+    const formTime = new Date().toISOString(); // 記錄填表時間
 
-        // 發送資料至後端
-        fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('填寫完成！');  // 顯示填寫成功訊息
-                liff.close();  // 關閉LIFF視窗
-
-                // 在LINE BOT中回覆訊息
-                sendReminderMessage(userID, vaccineName, appointmentDate);  // 呼叫函數發送訊息
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
+    // 發送資料至後端
+    fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('填寫完成！');  // 顯示填寫成功訊息
+            liff.close();  // 關閉LIFF視窗
+        } else {
+            // 如果後端回應不是成功，顯示失敗訊息
             alert('填寫失敗，請稍後再試');
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('填寫失敗，請稍後再試');
     });
 </script>
 <script>
