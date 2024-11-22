@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from flask_cors import CORS
 
+
 # 設置日誌
 logging.basicConfig(level=logging.DEBUG)
 
@@ -156,6 +157,18 @@ def save_data():
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+# 設置日誌
+logging.basicConfig(level=logging.DEBUG)
+
+@app.route('/log', methods=['POST'])
+def log_error():
+    data = request.get_json()
+    if data is None or 'message' not in data:
+        return jsonify({'status': 'error', 'message': '無效的日誌格式'}), 400
+
+    # 記錄日誌
+    logging.error(data['message'])
+    return jsonify({'status': 'success'}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
