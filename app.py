@@ -129,13 +129,13 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
 
     if third_dose_date:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
-            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}\n\n"
+            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種"
         )
     else:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}。\n"
-            "我們會在第二劑接種前3天傳送訊息提醒您接種。"
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n\n"
+            "我們會在第二劑接種前3天傳送訊息提醒您接種"
         )
 
     headers = {
@@ -168,15 +168,15 @@ def send_line_message_reminder(user_id, vaccine_name=None, second_dose_date=None
 
     if second_dose_date and third_dose_date:
         message_text = (
-            f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}，已經可以接種囉！"
+            f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}\n\n已經可以接種囉！"
         )
     elif second_dose_date:
         message_text = (
-            f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}，已經可以接種囉！"
+            f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}\n\n已經可以接種囉！"
         )
     elif third_dose_date:
         message_text = (
-            f"提醒您，您的{vaccine_name}第三劑接種時間為：{third_dose_date}，已經可以接種囉！"
+            f"提醒您，您的{vaccine_name}第三劑接種時間為：{third_dose_date}\n\n已經可以接種囉！"
         )
     else:
         message_text = "未提供接種時間資訊。"
