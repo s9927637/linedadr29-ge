@@ -60,17 +60,17 @@ def delayed_reply(user_id):
         third_dose_date = records[0][5]   # 假設第三劑在第六欄
         
         # 發送第二劑接種時間的訊息
-        send_line_message(user_id, vaccine_name, None, second_dose_date)
+        send_line_message_reminder(user_id, vaccine_name, None, second_dose_date)
 
         # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
         if third_dose_date:
             time.sleep(10)
-            send_line_message(user_id, vaccine_name, None, None, third_dose_date)
+            send_line_message_reminder(user_id, vaccine_name, None, None, third_dose_date)
         
         # 標註 Google Sheets 中的接種紀錄
         mark_vaccine_record(user_id, second_dose_date, third_dose_date)
     else:
-        send_line_message(user_id, "未找到您的接種紀錄。")
+        send_line_message_reminder(user_id, "未找到您的接種紀錄。")
 
 # 查詢接種紀錄的函數
 def get_vaccine_record(user_id):
