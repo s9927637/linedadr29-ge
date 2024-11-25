@@ -4,6 +4,8 @@ import datetime
 import logging
 import requests
 import pytz
+import time
+import threading
 from flask import Flask, request, jsonify, send_from_directory
 from google.auth.transport.requests import Request
 from google.auth import default
@@ -43,6 +45,17 @@ service = build('sheets', 'v4', credentials=creds)
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
 LINE_API_URL = "https://api.line.me/v2/bot/message/push"
 
+
+# 新增的功能：延遲回覆用戶的施打時間
+def delayed_reply(user_id, second_dose_date, third_dose_date):
+    # 等待 10 秒後回覆第二劑施打時間
+    time.sleep(10)
+    send_line_message(user_id, f"您的第二劑接種時間為：{second_dose_date}。")
+
+    # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
+    if third_dose_date:
+        time.sleep(10)
+        send_line_message(user_id, f"您的第三劑接種時間為：{third_dose_date}。")
 
 # 計算接種日期
 def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
@@ -161,6 +174,10 @@ def save_data():
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
+        
+
+# 在 save_data 函數中新增以下行
+threading.Thread(target=delayed_reply, args=(data['userID'], second_dose_date, third_dose_date)).start()  
 
         # 發送 LINE 訊息
         send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
