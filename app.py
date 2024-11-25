@@ -64,6 +64,9 @@ def delayed_reply(user_id):
         if third_dose_date:
             time.sleep(10)
             send_line_message(user_id, f"您的第三劑接種時間為：{third_dose_date}。")
+
+        # 標註 Google Sheets 中的接種紀錄
+        mark_vaccine_record(user_id, second_dose_date, third_dose_date)
     else:
         send_line_message(user_id, "未找到您的接種紀錄。")
 
@@ -92,8 +95,29 @@ def get_vaccine_record(user_id):
             return {'status': 'error', 'message': '未找到接種紀錄'}
 
     except Exception as e:
-        logging.error(f"查詢接種記錄時發生錯誤: {e}")
+        logging.error(f"查詢接種紀錄時發生錯誤: {e}")
         return {'status': 'error', 'message': str(e)}
+
+# 標註接種紀錄的函數
+def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
+    try:
+        # 更新 Google Sheets 中的接種紀錄
+        range_to_update = 'Sheet1!I2:J2'  # 假設標註在 I 和 J 欄
+        values = [
+            [f"已提醒第二劑接種時間：{second_dose_date}", f"已提醒第三劑接種時間：{third_dose_date if third_dose_date else '無'}"]
+        ]
+        body = {'values': values}
+
+        service.spreadsheets().values().update(
+            spreadsheetId=SPREADSHEET_ID,
+            range=range_to_update,
+            valueInputOption='RAW',
+            body=body
+        ).execute()
+
+        logging.info("接種紀錄已標註成功")
+    except Exception as e:
+        logging.error(f"標註接種紀錄時發生錯誤: {e}")
 
 # 計算接種日期
 def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
