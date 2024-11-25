@@ -55,15 +55,16 @@ def delayed_reply(user_id):
     if result['status'] == 'success':
         # 獲取接種紀錄
         records = result['data']
+        vaccine_name = records[0][2]  # 假設疫苗名稱在第三欄
         second_dose_date = records[0][4]  # 假設第二劑在第五欄
         third_dose_date = records[0][5]   # 假設第三劑在第六欄
 
-        send_line_message(user_id, f"您的第二劑接種時間為：{second_dose_date}。")
+        send_line_message(user_id, f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}，已經可以接種囉！")
 
         # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
         if third_dose_date:
             time.sleep(10)
-            send_line_message(user_id, f"您的第三劑接種時間為：{third_dose_date}。")
+            send_line_message(user_id, f"提醒您，您的{vaccine_name}第三劑接種時間為：{third_dose_date}，已經可以接種囉！")
 
         # 標註 Google Sheets 中的接種紀錄
         mark_vaccine_record(user_id, second_dose_date, third_dose_date)
