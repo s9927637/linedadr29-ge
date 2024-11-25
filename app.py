@@ -62,10 +62,6 @@ def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
     else:
         return None, None
 
-# 確保填表時間格式正確並以台北時間顯示
-        taipei_tz = pytz.timezone('Asia/Taipei')  # 設定台北時區
-        form_time = datetime.datetime.now(taipei_tz).strftime('%Y年%m月%d日%H時%M分')  # 使用台北時間
-
 # 發送 LINE 訊息
 def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
     if not user_id:
@@ -128,20 +124,35 @@ def save_data():
             logging.error(f"缺少 userID，請求資料: {data}")
             return jsonify({'status': 'error', 'message': '缺少 userID'}), 400
 
-        # 確保填表時間格式正確並以24小時制顯示
-        form_time = datetime.datetime.now().strftime('%Y年%m月%d日%H時%M分')
+        # 確保填表時間格式正確並以台北時間顯示
+        taipei_tz = pytz.timezone('Asia/Taipei')  # 設定台北時區
+        form_time = datetime.datetime.now(taipei_tz).strftime('%Y年%m月%d日%H時%M分')  # 使用台北時間
 
         # 計算接種日期
         second_dose_date, third_dose_date = calculate_vaccine_doses(data['vaccineName'], data['appointmentDate'])
 
         # 構建要寫入 Google Sheets 的資料，根據欄位順序進行設置
-        if third_dose_date is None:  # 只有第二劑接種時間
+        if data['vaccineName'] == '子宮頸疫苗':
+            if third_dose_date is None:  # 只有第二劑接種時間
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, None, data['userID'], form_time, "已提醒", None]
+                ]
+            else:  # 第二劑和第三劑接種時間
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date, data['userID'], form_time, "已提醒", "已提醒"]
+                ]
+        elif data['vaccineName'] in ['欣克疹疫苗', 'A肝疫苗']:
+            if third_dose_date is None:  # 只有第二劑接種時間
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, None, data['userID'], form_time, None, "已提醒"]
+                ]
+            else:  # 第二劑和第三劑接種時間
+                values = [
+                    [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date, data['userID'], form_time, None, "已提醒"]
+                ]
+        else:
             values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, None, data['userID'], form_time]
-            ]
-        else:  # 第二劑和第三劑接種時間
-            values = [
-                [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date, data['userID'], form_time]
+                [data['userName'], data['userPhone'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date, data['userID'], form_time, None, None]
             ]
 
         body = {'values': values}
