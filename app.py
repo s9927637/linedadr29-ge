@@ -174,10 +174,9 @@ def save_data():
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
-        
 
-# 在 save_data 函數中新增以下行
-threading.Thread(target=delayed_reply, args=(data['userID'], second_dose_date, third_dose_date)).start()  
+        # 在 save_data 函數中新增以下行
+        threading.Thread(target=delayed_reply, args=(data['userID'], second_dose_date, third_dose_date)).start()  
 
         # 發送 LINE 訊息
         send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
