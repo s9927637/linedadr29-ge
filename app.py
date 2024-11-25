@@ -58,7 +58,14 @@ def delayed_reply(user_id):
         vaccine_name = records[0][2]  # 假設疫苗名稱在第三欄
         second_dose_date = records[0][4]  # 假設第二劑在第五欄
         third_dose_date = records[0][5]   # 假設第三劑在第六欄
+        
+        send_line_message(user_id, vaccine_name, second_dose_date, third_dose_date)
 
+        # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
+        if third_dose_date:
+            time.sleep(10)
+            send_line_message(user_id, vaccine_name, second_dose_date, third_dose_date)
+        
         # 標註 Google Sheets 中的接種紀錄
         mark_vaccine_record(user_id, second_dose_date, third_dose_date)
     else:
@@ -112,21 +119,21 @@ def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
         logging.info("接種紀錄已標註成功")
     except Exception as e:
         logging.error(f"標註接種紀錄時發生錯誤: {e}")
-        
+
 # 發送 LINE 訊息
-def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
+def send_line_message(user_id, vaccine_name, second_dose_date, third_dose_date=None):
     if not user_id:
         logging.error("無效的 user_id: 未提供 user_id")
         return
 
     if third_dose_date:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
+            f"你的接種疫苗：{vaccine_name}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
             "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
         )
     else:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}。\n"
+            f"你的接種疫苗：{vaccine_name}\n第二劑接種時間：{second_dose_date}。\n"
             "我們會在第二劑接種前3天傳送訊息提醒您接種。"
         )
 
@@ -230,7 +237,7 @@ def save_data():
             valueInputOption='RAW', body=body).execute()
 
         # 立即回覆用戶接種疫苗的詳細資訊
-        send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
+        send_line_message(data['userID'], data['vaccineName'], second_dose_date, third_dose_date)
 
         # 在 save_data 函數中新增以下行
         threading.Thread(target=delayed_reply, args=(data['userID'],)).start()  
