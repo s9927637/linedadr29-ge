@@ -59,13 +59,6 @@ def delayed_reply(user_id):
         second_dose_date = records[0][4]  # 假設第二劑在第五欄
         third_dose_date = records[0][5]   # 假設第三劑在第六欄
 
-        send_line_message(user_id, f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}，已經可以接種囉！")
-
-        # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
-        if third_dose_date:
-            time.sleep(10)
-            send_line_message(user_id, f"提醒您，您的{vaccine_name}第三劑接種時間為：{third_dose_date}，已經可以接種囉！")
-
         # 標註 Google Sheets 中的接種紀錄
         mark_vaccine_record(user_id, second_dose_date, third_dose_date)
     else:
@@ -120,29 +113,22 @@ def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
     except Exception as e:
         logging.error(f"標註接種紀錄時發生錯誤: {e}")
 
-# 計算接種日期
-def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
-    first_dose_date_obj = datetime.datetime.strptime(first_dose_date, '%Y-%m-%d')  # 解析為日期對象
-
-    if vaccine_name == '子宮頸疫苗':
-        # 第二劑和第三劑接種時間
-        second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
-        third_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=180)
-        return second_dose_date_obj.strftime('%Y-%m-%d'), third_dose_date_obj.strftime('%Y-%m-%d')
-    
-    elif vaccine_name in ['欣克疹疫苗', 'A肝疫苗']:
-        # 第二劑接種時間是接種日期後60天
-        second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
-        return second_dose_date_obj.strftime('%Y-%m-%d'), None
-    
-    else:
-        return None, None
-
 # 發送 LINE 訊息
-def send_line_message(user_id, message_text):
+def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
     if not user_id:
         logging.error("無效的 user_id: 未提供 user_id")
         return
+
+    if third_dose_date:
+        message_text = (
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
+            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
+        )
+    else:
+        message_text = (
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}。\n"
+            "我們會在第二劑接種前3天傳送訊息提醒您接種。"
+        )
 
     headers = {
         'Content-Type': 'application/json',
@@ -165,6 +151,24 @@ def send_line_message(user_id, message_text):
         logging.info("LINE 訊息發送成功")
     else:
         logging.error(f"發送 LINE 訊息失敗: {response.text}")
+
+# 計算接種日期
+def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
+    first_dose_date_obj = datetime.datetime.strptime(first_dose_date, '%Y-%m-%d')  # 解析為日期對象
+
+    if vaccine_name == '子宮頸疫苗':
+        # 第二劑和第三劑接種時間
+        second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
+        third_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=180)
+        return second_dose_date_obj.strftime('%Y-%m-%d'), third_dose_date_obj.strftime('%Y-%m-%d')
+    
+    elif vaccine_name in ['欣克疹疫苗', 'A肝疫苗']:
+        # 第二劑接種時間是接種日期後60天
+        second_dose_date_obj = first_dose_date_obj + datetime.timedelta(days=60)
+        return second_dose_date_obj.strftime('%Y-%m-%d'), None
+    
+    else:
+        return None, None
 
 # 根路由處理 index.html
 @app.route('/')
@@ -224,6 +228,9 @@ def save_data():
         service.spreadsheets().values().append(
             spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME,
             valueInputOption='RAW', body=body).execute()
+
+        # 立即回覆用戶接種疫苗的詳細資訊
+        send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
 
         # 在 save_data 函數中新增以下行
         threading.Thread(target=delayed_reply, args=(data['userID'],)).start()  
