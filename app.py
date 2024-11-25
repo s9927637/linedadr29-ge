@@ -60,14 +60,14 @@ def delayed_reply(user_id):
         third_dose_date = records[0][5]   # 假設第三劑在第六欄
         
         # 發送第二劑接種時間的訊息
-        send_line_message_reminder(user_id, vaccine_name, None, second_dose_date)
+        send_line_message_reminder(user_id, vaccine_name, second_dose_date)
 
         # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
         if third_dose_date:
             time.sleep(10)
-            send_line_message_reminder(user_id, vaccine_name, None, None, third_dose_date)
+            send_line_message_reminder(user_id, vaccine_name, None, third_dose_date)
         
-        # 標註 Google Sheets 中的接種紀錄
+        # 在發送完訊息後再標註 Google Sheets 中的接種紀錄
         mark_vaccine_record(user_id, second_dose_date, third_dose_date)
     else:
         send_line_message_reminder(user_id, "未找到您的接種紀錄。")
@@ -129,13 +129,13 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
 
     if third_dose_date:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}\n\n"
-            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種"
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
+            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
         )
     else:
         message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n\n"
-            "我們會在第二劑接種前3天傳送訊息提醒您接種"
+            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}。\n"
+            "我們會在第二劑接種前3天傳送訊息提醒您接種。"
         )
 
     headers = {
