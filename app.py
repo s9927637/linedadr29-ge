@@ -3,6 +3,7 @@ import json
 import datetime
 import logging
 import requests
+import pytz
 from flask import Flask, request, jsonify, send_from_directory
 from google.auth.transport.requests import Request
 from google.auth import default
@@ -61,6 +62,9 @@ def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
     else:
         return None, None
 
+# 確保填表時間格式正確並以台北時間顯示
+        taipei_tz = pytz.timezone('Asia/Taipei')  # 設定台北時區
+        form_time = datetime.datetime.now(taipei_tz).strftime('%Y年%m月%d日%H時%M分')  # 使用台北時間
 
 # 發送 LINE 訊息
 def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
