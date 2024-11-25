@@ -13,7 +13,6 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from flask_cors import CORS
 
-
 # 設置日誌
 logging.basicConfig(level=logging.DEBUG)
 
@@ -45,17 +44,56 @@ service = build('sheets', 'v4', credentials=creds)
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
 LINE_API_URL = "https://api.line.me/v2/bot/message/push"
 
-
 # 新增的功能：延遲回覆用戶的施打時間
-def delayed_reply(user_id, second_dose_date, third_dose_date):
+def delayed_reply(user_id):
     # 等待 10 秒後回覆第二劑施打時間
     time.sleep(10)
-    send_line_message(user_id, f"您的第二劑接種時間為：{second_dose_date}。")
+    
+    # 查詢 Google Sheets 獲取接種紀錄
+    result = get_vaccine_record(user_id)
+    
+    if result['status'] == 'success':
+        # 獲取接種紀錄
+        records = result['data']
+        second_dose_date = records[0][4]  # 假設第二劑在第五欄
+        third_dose_date = records[0][5]   # 假設第三劑在第六欄
 
-    # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
-    if third_dose_date:
-        time.sleep(10)
-        send_line_message(user_id, f"您的第三劑接種時間為：{third_dose_date}。")
+        send_line_message(user_id, f"您的第二劑接種時間為：{second_dose_date}。")
+
+        # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
+        if third_dose_date:
+            time.sleep(10)
+            send_line_message(user_id, f"您的第三劑接種時間為：{third_dose_date}。")
+    else:
+        send_line_message(user_id, "未找到您的接種紀錄。")
+
+# 查詢接種紀錄的函數
+def get_vaccine_record(user_id):
+    try:
+        logging.debug(f"查詢用戶 {user_id} 的疫苗接種記錄")
+
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Sheet1!A:H'  # 假設資料在 A 到 H 欄
+        ).execute()
+
+        values = result.get('values', [])
+        user_records = []
+
+        for row in values:
+            if len(row) > 6 and row[6] == user_id:  # 假設 userID 在第七欄
+                user_records.append(row)
+
+        if user_records:
+            logging.info(f"找到用戶 {user_id} 的接種記錄")
+            return {'status': 'success', 'data': user_records}
+        else:
+            logging.warning(f"未找到用戶 {user_id} 的接種記錄")
+            return {'status': 'error', 'message': '未找到接種紀錄'}
+
+    except Exception as e:
+        logging.error(f"查詢接種記錄時發生錯誤: {e}")
+        return {'status': 'error', 'message': str(e)}
 
 # 計算接種日期
 def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
@@ -76,21 +114,10 @@ def calculate_vaccine_doses(vaccine_name: str, first_dose_date: str):
         return None, None
 
 # 發送 LINE 訊息
-def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
+def send_line_message(user_id, message_text):
     if not user_id:
         logging.error("無效的 user_id: 未提供 user_id")
         return
-
-    if third_dose_date:
-        message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}\n第三劑接種時間：{third_dose_date}。\n"
-            "我們會在第二劑及第三劑接種前3天傳送訊息提醒您接種。"
-        )
-    else:
-        message_text = (
-            f"你的接種疫苗：{vaccine_name}\n接種日期：{first_dose_date}\n第二劑接種時間：{second_dose_date}。\n"
-            "我們會在第二劑接種前3天傳送訊息提醒您接種。"
-        )
 
     headers = {
         'Content-Type': 'application/json',
@@ -114,12 +141,10 @@ def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, 
     else:
         logging.error(f"發送 LINE 訊息失敗: {response.text}")
 
-
 # 根路由處理 index.html
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
-
 
 @app.route('/saveData', methods=['POST'])
 def save_data():
@@ -176,10 +201,7 @@ def save_data():
             valueInputOption='RAW', body=body).execute()
 
         # 在 save_data 函數中新增以下行
-        threading.Thread(target=delayed_reply, args=(data['userID'], second_dose_date, third_dose_date)).start()  
-
-        # 發送 LINE 訊息
-        send_line_message(data['userID'], data['vaccineName'], data['appointmentDate'], second_dose_date, third_dose_date)
+        threading.Thread(target=delayed_reply, args=(data['userID'],)).start()  
 
         logging.info("資料成功儲存至 Google Sheets 且 LINE 訊息已發送")
         return jsonify({'status': 'success', 'message': '資料成功儲存並發送 LINE 訊息'}), 200
@@ -187,9 +209,6 @@ def save_data():
     except Exception as e:
         logging.error(f"儲存資料時發生錯誤: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
-# 設置日誌
-logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/log', methods=['POST'])
 def log_error():
