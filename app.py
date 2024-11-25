@@ -98,7 +98,7 @@ def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
         # 更新 Google Sheets 中的接種紀錄
         range_to_update = 'Sheet1!I2:J2'  # 假設標註在 I 和 J 欄
         values = [
-            [f"已提醒第二劑接種時間：{second_dose_date}", f"已提醒第三劑接種時間：{third_dose_date if third_dose_date else '無'}"]
+            ["已提醒", "已提醒" if third_dose_date else ""]
         ]
         body = {'values': values}
 
@@ -112,7 +112,7 @@ def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
         logging.info("接種紀錄已標註成功")
     except Exception as e:
         logging.error(f"標註接種紀錄時發生錯誤: {e}")
-
+        
 # 發送 LINE 訊息
 def send_line_message(user_id, vaccine_name, first_dose_date, second_dose_date, third_dose_date=None):
     if not user_id:
