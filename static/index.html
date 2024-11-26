@@ -5,7 +5,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-       <style>
+    <style>
         select, input[type="date"] {
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -15,15 +15,15 @@
             padding-right: 2.5rem;
             -webkit-print-color-adjust: exact;
         }
-.checkmark {
-    position: absolute;
-    right: 0.5rem;
-    top: 1.5rem;
-    color: green;
-    font-size: 1.5rem; /* 調整大小 */
-    display: none;
-}
-    /* 自定義彈出視窗樣式 */
+        .checkmark {
+            position: absolute;
+            right: 0.5rem;
+            top: 1.5rem;
+            color: green;
+            font-size: 1.5rem; /* 調整大小 */
+            display: none;
+        }
+        /* 自定義彈出視窗樣式 */
         .modal {
             display: none; /* 隱藏彈出視窗 */
             position: fixed;
@@ -227,14 +227,14 @@
                 return response.json(); // 解析 JSON
             })
             .then(data => {
-                    console.log('Response data:', data); // 日誌輸出回應數據
-                    if (data.status === 'success') {
-                        isFormSubmitted = true; // 設置狀態標記
-                        document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
-                    } else {
-                        console.error('後端回應的狀態不是成功:', data.status);
-                        alert('填寫失敗，請稍後再試'); // 使用自定義的錯誤提示
-                    }
+                console.log('Response data:', data); // 日誌輸出回應數據
+                if (data.status === 'success') {
+                    // 顯示自定義彈出視窗
+                    document.getElementById('success-modal').style.display = 'block';
+                } else {
+                    console.error('後端回應的狀態不是成功:', data.status);
+                    alert('填寫失敗，請稍後再試');
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -250,8 +250,7 @@
             document.getElementById('success-modal').style.display = 'none';
             liff.close();  // 關閉LIFF視窗
         });
-    </script>
-    <script>
+
         // 初始化LIFF
         function initializeLIFF() {
             liff.init({ liffId: "2003645883-Rn6V0a3n" })
