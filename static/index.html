@@ -273,5 +273,31 @@
                 }
             };
     </script>
+     <script>
+        // 初始化LIFF
+        function initializeLIFF() {
+            liff.init({ liffId: "2003645883-Rn6V0a3n" })
+                .then(() => {
+                    // 獲取用戶的userID
+                    return liff.getProfile();
+                })
+                .then(profile => {
+                    // 將用戶ID設置為隱藏欄位
+                    document.getElementById('userID').value = profile.userId;
+                })
+                .catch(err => {
+                    console.error('LIFF初始化錯誤:', err);
+                });
+        }
+
+        // 等待LIFF加載完成後初始化
+        window.onload = function() {
+            if (liff.isInClient()) {
+                initializeLIFF();
+            } else {
+                console.log('LIFF未在LINE應用中運行');
+            }
+        };
+    </script>
 </body>
 </html>
