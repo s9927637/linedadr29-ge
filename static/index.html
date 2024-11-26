@@ -193,8 +193,23 @@
         }
 
         
-           let isFormSubmitted = false; // 狀態標記
-
+            // 檢查是否已提交過表單
+            window.onload = function() {
+                // 檢查 localStorage 中的狀態
+                const formStatus = localStorage.getItem('formSubmitted');
+                if (formStatus === 'true') {
+                    // 如果已經提交過，清除狀態
+                    localStorage.removeItem('formSubmitted'); // 清除狀態
+                } else {
+                    // 其他初始化代碼
+                    if (liff.isInClient()) {
+                        initializeLIFF();
+                    } else {
+                        console.log('LIFF未在LINE應用中運行');
+                    }
+                }
+            };
+            
             // 表單提交事件
             document.getElementById('vaccine-form').addEventListener('submit', function(event) {
                 event.preventDefault(); // 防止表單重新整理頁面
@@ -235,7 +250,7 @@
                 .then(data => {
                     console.log('Response data:', data); // 日誌輸出回應數據
                     if (data.status === 'success') {
-                        isFormSubmitted = true; // 設置狀態標記
+                        localStorage.setItem('formSubmitted', 'true'); // 在表單提交成功後，將狀態存入 localStorage
                         document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
                     } else {
                         console.error('後端回應的狀態不是成功:', data.status);
@@ -257,27 +272,6 @@
                 if (liff.isInClient()) {
                     liff.close();  // 關閉LIFF視窗
                 }
-            });
-            
-            // 檢查是否已提交過表單
-            window.onload = function() {
-                // 檢查 localStorage 中的狀態
-                const formStatus = localStorage.getItem('formSubmitted');
-                if (formStatus === 'true') {
-                    document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
-                } else {
-                    // 其他初始化代碼
-                    if (liff.isInClient()) {
-                        initializeLIFF();
-                    } else {
-                        console.log('LIFF未在LINE應用中運行');
-                    }
-                }
-            };
-            
-            // 在表單提交成功後，將狀態存入 localStorage
-            document.getElementById('vaccine-form').addEventListener('submit', function() {
-                localStorage.setItem('formSubmitted', 'true');
             });
     </script>
      <script>
