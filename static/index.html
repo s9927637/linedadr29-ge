@@ -193,85 +193,85 @@
         }
 
         
-        let isFormSubmitted = false; // 狀態標記
-        
-        // 表單提交事件
-        document.getElementById('vaccine-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // 防止表單重新整理頁面
-        
-            // 禁用提交按鈕
-            const submitButton = event.target.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-        
-            // 驗證表單
-            if (!validateForm()) {
-                submitButton.disabled = false; // 重新啟用按鈕
-                return;
-            }
-        
-            // 當表單通過驗證後，發送資料到後端
-            const userName = document.getElementById('name').value;
-            const userPhone = document.getElementById('phone').value;
-            const vaccineName = document.getElementById('vaccine').value;
-            const appointmentDate = document.getElementById('date').value;
-            const userID = document.getElementById('userID').value;
-        
-            const formTime = new Date().toISOString(); // 記錄填表時間
-        
-            // 發送資料至後端
-            fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            let isFormSubmitted = false; // 狀態標記
+            
+            // 表單提交事件
+            document.getElementById('vaccine-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // 防止表單重新整理頁面
+            
+                // 禁用提交按鈕
+                const submitButton = event.target.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+            
+                // 驗證表單
+                if (!validateForm()) {
+                    submitButton.disabled = false; // 重新啟用按鈕
+                    return;
                 }
-                return response.json(); // 解析 JSON
-            })
-            .then(data => {
-                console.log('Response data:', data); // 日誌輸出回應數據
-                if (data.status === 'success') {
-                    isFormSubmitted = true; // 設置狀態標記
-                    document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
-                } else {
-                    console.error('後端回應的狀態不是成功:', data.status);
-                    alert('填寫失敗，請稍後再試');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('填寫失敗，請稍後再試');
-            })
-            .finally(() => {
-                submitButton.disabled = false; // 確保按鈕在請求結束後重新啟用
+            
+                // 當表單通過驗證後，發送資料到後端
+                const userName = document.getElementById('name').value;
+                const userPhone = document.getElementById('phone').value;
+                const vaccineName = document.getElementById('vaccine').value;
+                const appointmentDate = document.getElementById('date').value;
+                const userID = document.getElementById('userID').value;
+            
+                const formTime = new Date().toISOString(); // 記錄填表時間
+            
+                // 發送資料至後端
+                fetch('https://linedadr29ga.hkg1.zeabur.app/saveData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userID, userName, userPhone, vaccineName, appointmentDate, formTime }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); // 解析 JSON
+                })
+                .then(data => {
+                    console.log('Response data:', data); // 日誌輸出回應數據
+                    if (data.status === 'success') {
+                        isFormSubmitted = true; // 設置狀態標記
+                        document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
+                    } else {
+                        console.error('後端回應的狀態不是成功:', data.status);
+                        alert('填寫失敗，請稍後再試'); // 使用自定義的錯誤提示
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('填寫失敗，請稍後再試'); // 使用自定義的錯誤提示
+                })
+                .finally(() => {
+                    submitButton.disabled = false; // 確保按鈕在請求結束後重新啟用
+                });
             });
-        });
-        
-        // 關閉彈出視窗
-        document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
-            if (liff.isInClient()) {
-                liff.close();  // 關閉LIFF視窗
-            }
-        });
-        
-        // 檢查是否已提交過表單
-        window.onload = function() {
-            if (isFormSubmitted) {
+            
+            // 關閉彈出視窗
+            document.getElementById('close-modal').addEventListener('click', function() {
                 document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
-            } else {
-                // 其他初始化代碼
                 if (liff.isInClient()) {
-                    initializeLIFF();
-                } else {
-                    console.log('LIFF未在LINE應用中運行');
+                    liff.close();  // 關閉LIFF視窗
                 }
-            }
-        };
+            });
+            
+            // 檢查是否已提交過表單
+            window.onload = function() {
+                if (isFormSubmitted) {
+                    document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
+                } else {
+                    // 其他初始化代碼
+                    if (liff.isInClient()) {
+                        initializeLIFF();
+                    } else {
+                        console.log('LIFF未在LINE應用中運行');
+                    }
+                }
+            };
     </script>
 </body>
 </html>
