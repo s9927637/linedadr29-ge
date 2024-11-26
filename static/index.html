@@ -179,14 +179,14 @@
                 return response.json(); // 解析 JSON
             })
             .then(data => {
-                console.log('Response data:', data); // 日誌輸出回應數據
-                if (data.status === 'success') {
-                    // 顯示自定義彈出視窗
-                    document.getElementById('success-modal').style.display = 'flex'; // 使用 flex 來顯示彈出視窗
-                } else {
-                    console.error('後端回應的狀態不是成功:', data.status);
-                    alert('填寫失敗，請稍後再試');
-                }
+                    console.log('Response data:', data); // 日誌輸出回應數據
+                    if (data.status === 'success') {
+                        isFormSubmitted = true; // 設置狀態標記
+                        document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
+                    } else {
+                        console.error('後端回應的狀態不是成功:', data.status);
+                        alert('填寫失敗，請稍後再試'); // 使用自定義的錯誤提示
+                    }
             })
             .catch(error => {
                 console.error('Error:', error);
