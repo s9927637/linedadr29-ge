@@ -34,15 +34,18 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.5); /* 背景顏色 */
+            justify-content: center; /* 水平置中 */
+            align-items: center; /* 垂直置中 */
+            display: flex; /* 使用 Flexbox */
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 400px; /* 最大寬度 */
             text-align: center; /* 文字置中 */
+            border-radius: 8px; /* 圓角 */
         }
     </style>
 </head>
@@ -247,8 +250,12 @@
 
         // 關閉彈出視窗
         document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('success-modal').style.display = 'none';
-            liff.close();  // 關閉LIFF視窗
+            document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
+            if (liff.isInClient()) {
+                liff.close();  // 關閉LIFF視窗
+            } else {
+                window.location.reload(); // 重新加載頁面
+            }
         });
 
         // 初始化LIFF
