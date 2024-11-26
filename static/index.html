@@ -195,12 +195,12 @@
         
             // 檢查是否已提交過表單
             window.onload = function() {
-                // 檢查 localStorage 中的狀態
-                const formStatus = localStorage.getItem('formSubmitted');
+                // 檢查 sessionStorage 中的狀態
+                const formStatus = sessionStorage.getItem('formSubmitted');
                 if (formStatus === 'true') {
                     // 如果已經提交過，隱藏填寫完成的小視窗
                     document.getElementById('success-modal').style.display = 'none'; // 確保隱藏彈出視窗
-                    localStorage.removeItem('formSubmitted'); // 清除狀態
+                    sessionStorage.removeItem('formSubmitted'); // 清除狀態
                 } else {
                     // 其他初始化代碼
                     if (liff.isInClient()) {
@@ -251,7 +251,7 @@
                 .then(data => {
                     console.log('Response data:', data); // 日誌輸出回應數據
                     if (data.status === 'success') {
-                        localStorage.setItem('formSubmitted', 'true'); // 在表單提交成功後，將狀態存入 localStorage
+                        sessionStorage.setItem('formSubmitted', 'true'); // 在表單提交成功後，將狀態存入 sessionStorage
                         document.getElementById('success-modal').style.display = 'flex'; // 顯示彈出視窗
                     } else {
                         console.error('後端回應的狀態不是成功:', data.status);
@@ -270,7 +270,7 @@
             // 關閉彈出視窗
             document.getElementById('close-modal').addEventListener('click', function() {
                 document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
-                localStorage.removeItem('formSubmitted'); // 清除狀態
+                sessionStorage.removeItem('formSubmitted'); // 清除狀態
                 if (liff.isInClient()) {
                     liff.close();  // 關閉LIFF視窗
                 }
