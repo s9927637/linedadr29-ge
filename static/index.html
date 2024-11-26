@@ -193,8 +193,8 @@
         }
 
         
-            let isFormSubmitted = false; // 狀態標記
-            
+           let isFormSubmitted = false; // 狀態標記
+
             // 表單提交事件
             document.getElementById('vaccine-form').addEventListener('submit', function(event) {
                 event.preventDefault(); // 防止表單重新整理頁面
@@ -261,7 +261,9 @@
             
             // 檢查是否已提交過表單
             window.onload = function() {
-                if (isFormSubmitted) {
+                // 檢查 localStorage 中的狀態
+                const formStatus = localStorage.getItem('formSubmitted');
+                if (formStatus === 'true') {
                     document.getElementById('success-modal').style.display = 'none'; // 隱藏彈出視窗
                 } else {
                     // 其他初始化代碼
@@ -272,6 +274,11 @@
                     }
                 }
             };
+            
+            // 在表單提交成功後，將狀態存入 localStorage
+            document.getElementById('vaccine-form').addEventListener('submit', function() {
+                localStorage.setItem('formSubmitted', 'true');
+            });
     </script>
      <script>
         // 初始化LIFF
