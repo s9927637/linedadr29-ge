@@ -7,8 +7,6 @@ import pytz
 import time
 import threading
 from flask import Flask, request, jsonify, send_from_directory
-from google.auth.transport.requests import Request
-from google.auth import default
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from flask_cors import CORS
@@ -46,31 +44,34 @@ LINE_API_URL = "https://api.line.me/v2/bot/message/push"
 
 # 新增的功能：延遲回覆用戶的施打時間
 def delayed_reply(user_id):
-    # 等待 10 秒後回覆第二劑施打時間
-    time.sleep(10)
-    
-    # 查詢 Google Sheets 獲取接種紀錄
-    result = get_vaccine_record(user_id)
-    
-    if result['status'] == 'success':
-        # 獲取接種紀錄
-        records = result['data']
-        vaccine_name = records[0][2]  # 假設疫苗名稱在第三欄
-        second_dose_date = records[0][4]  # 假設第二劑在第五欄
-        third_dose_date = records[0][5]   # 假設第三劑在第六欄
-        
-        # 發送第二劑接種時間的訊息
-        send_line_message_reminder(user_id, vaccine_name, second_dose_date)
+    try:
+        # 等待 10 秒後回覆第二劑施打時間
+        time.sleep(10)
 
-        # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
-        if third_dose_date:
-            time.sleep(10)
-            send_line_message_reminder(user_id, vaccine_name, None, third_dose_date)
-        
-        # 在發送完訊息後再標註 Google Sheets 中的接種紀錄
-        mark_vaccine_record(user_id, second_dose_date, third_dose_date)
-    else:
-        send_line_message_reminder(user_id, "未找到您的接種紀錄。")
+        # 查詢 Google Sheets 獲取接種紀錄
+        result = get_vaccine_record(user_id)
+
+        if result['status'] == 'success':
+            # 獲取接種紀錄
+            records = result['data']
+            vaccine_name = records[0][2]  # 疫苗名稱在第三欄 (C)
+            second_dose_date = records[0][4]  # 第二劑在第五欄 (E)
+            third_dose_date = records[0][5] if len(records[0]) > 5 else None  # 第三劑在第六欄 (F)
+
+            # 發送第二劑接種時間的訊息
+            send_line_message_reminder(user_id, vaccine_name, second_dose_date)
+
+            # 如果有第三劑，則再等 10 秒後回覆第三劑施打時間
+            if third_dose_date:
+                time.sleep(10)
+                send_line_message_reminder(user_id, vaccine_name, None, third_dose_date)
+
+            # 在發送完訊息後再標註 Google Sheets 中的接種紀錄
+            mark_vaccine_record(user_id, second_dose_date, third_dose_date)
+        else:
+            logging.warning(f"delayed_reply: 未找到用戶 {user_id} 的接種紀錄")
+    except Exception as e:
+        logging.error(f"delayed_reply 執行時發生錯誤: {e}")
 
 # 查詢接種紀錄的函數
 def get_vaccine_record(user_id):
@@ -103,8 +104,24 @@ def get_vaccine_record(user_id):
 # 標註接種紀錄的函數
 def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
     try:
-        # 更新 Google Sheets 中的接種紀錄
-        range_to_update = 'Sheet1!I2:J2'  # 假設標註在 I 和 J 欄
+        # 取得所有資料，找出正確的行號（userID 在第七欄，index=6）
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Sheet1!A:J'
+        ).execute()
+        rows = result.get('values', [])
+
+        row_number = None
+        for i, row in enumerate(rows):
+            if len(row) > 6 and row[6] == user_id:
+                row_number = i + 1  # Google Sheets 行號從 1 開始
+                break
+
+        if row_number is None:
+            logging.warning(f"mark_vaccine_record: 找不到用戶 {user_id} 的資料列")
+            return
+
+        range_to_update = f'Sheet1!I{row_number}:J{row_number}'
         values = [
             ["已提醒", "已提醒" if third_dose_date else ""]
         ]
@@ -117,7 +134,7 @@ def mark_vaccine_record(user_id, second_dose_date, third_dose_date):
             body=body
         ).execute()
 
-        logging.info("接種紀錄已標註成功")
+        logging.info(f"接種紀錄已標註成功（第 {row_number} 行）")
     except Exception as e:
         logging.error(f"標註接種紀錄時發生錯誤: {e}")
 
@@ -166,11 +183,7 @@ def send_line_message_reminder(user_id, vaccine_name=None, second_dose_date=None
         logging.error("無效的 user_id: 未提供 user_id")
         return
 
-    if second_dose_date and third_dose_date:
-        message_text = (
-            f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}\n\n已經可以接種囉！"
-        )
-    elif second_dose_date:
+    if second_dose_date:
         message_text = (
             f"提醒您，您的{vaccine_name}第二劑接種時間為：{second_dose_date}\n\n已經可以接種囉！"
         )
